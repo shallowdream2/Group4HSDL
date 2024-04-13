@@ -1,9 +1,9 @@
 
-#include "/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/memoryManagement/include/mmpool.cuh"
+#include "mmpool.cuh"
 #include <cuda_runtime.h>
 
 template <typename T>
-mmpool<T>::mmpool(int num_blocks, int nodes_per_block)
+__host__ mmpool<T>::mmpool(int num_blocks, int nodes_per_block)
     : num_blocks(num_blocks), nodes_per_block(nodes_per_block) {
   cudaMalloc(&nodes_pool, sizeof(node) * nodes_per_block * num_blocks);
   cudaMallocManaged(&block_used_nodes, sizeof(int) * num_blocks);
@@ -18,17 +18,19 @@ mmpool<T>::mmpool(int num_blocks, int nodes_per_block)
 }
 
 // 析构函数
-template <typename T> mmpool<T>::~mmpool() {
+template <typename T> __host__ __device__ mmpool<T>::~mmpool() {
   cudaFree(nodes_pool);
   cudaFree(block_used_nodes);
   cudaFree(block_next_index);
 }
 
-template <typename T> bool mmpool<T>::is_full_block(int block_idx) {
+template <typename T>
+__host__ __device__ bool mmpool<T>::is_full_block(int block_idx) {
   return block_used_nodes[block_idx] == nodes_per_block;
 }
 
-template <typename T> bool mmpool<T>::is_valid_block(int block_idx) {
+template <typename T>
+__host__ __device__ bool mmpool<T>::is_valid_block(int block_idx) {
   if (block_idx >= 0 && block_idx < num_blocks) {
     return true; // 无效块索引
   }
@@ -36,10 +38,16 @@ template <typename T> bool mmpool<T>::is_valid_block(int block_idx) {
 }
 
 // 添加节点到内存池
-template <typename T> bool mmpool<T>::push_node(int block_idx, node new_node) {
+template <typename T>
+__host__ __device__ bool mmpool<T>::push_node(int block_idx,
+                                              const T &node_data) {
   if (!is_valid_block(block_idx)) {
     return false; // 无效块索引
   }
+  if (is_full_block(block_idx)) {
+    return false; // 块已满
+  }
+  node new_node(node_data);
   nodes_pool[block_idx * nodes_per_block + block_used_nodes[block_idx]] =
       new_node;
   block_used_nodes[block_idx]++;
@@ -47,7 +55,8 @@ template <typename T> bool mmpool<T>::push_node(int block_idx, node new_node) {
 }
 
 // 查找空块
-template <typename T> int mmpool<T>::find_available_block() {
+template <typename T>
+__host__ __device__ int mmpool<T>::find_available_block() {
   for (int i = now_empty_block_idx; i < num_blocks; ++i) {
     if (block_used_nodes[i] == 0) {
       return i;
@@ -57,7 +66,9 @@ template <typename T> int mmpool<T>::find_available_block() {
 }
 
 // 查找内存池中指定行的指定下标的块
-template <typename T> node *mmpool<T>::get_node(int block_idx, int node_idx) {
+template <typename T>
+__host__ __device__ mmpool<T>::node *mmpool<T>::get_node(int block_idx,
+                                                         int node_idx) {
   if (!is_valid_block(block_idx)) {
     return NULL; // 无效块索引
   }
@@ -68,7 +79,8 @@ template <typename T> node *mmpool<T>::get_node(int block_idx, int node_idx) {
 }
 
 // 删除块（逻辑删除）
-template <typename T> bool mmpool<T>::remove_block(int block_idx) {
+template <typename T>
+__host__ __device__ bool mmpool<T>::remove_block(int block_idx) {
   if (!is_valid_block(block_idx)) {
     return false; // 无效块索引
   }
