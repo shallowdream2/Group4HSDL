@@ -1,15 +1,16 @@
 #ifndef MMPOOL_CUH
 #define MMPOOL_CUH
 #include <cuda_runtime.h>
-
+#include <iostream>
 template <typename T> class mmpool {
 private:
   struct node {
     T data;
     bool is_used;
     bool is_end;
-    node() : is_used(false), is_end(false) {}
-    node(T data) : data(data), is_used(true), is_end(false) {}
+    __host__ __device__ node() : is_used(false), is_end(false) {}
+    __host__ __device__ node(T data)
+        : data(data), is_used(true), is_end(false) {}
   };
   node *nodes_pool;      // 指向预分配的所有节点的指针
   int *block_used_nodes; // 每个块中已使用节点的数量
@@ -20,8 +21,8 @@ private:
 
 public:
   // 构造函数
-  __host__ mmpool(int num_blocks, int nodes_per_block = 100);
-
+  __host__ mmpool(int num_blocks = 100, int nodes_per_block = 100);
+  __host__ size_t size();
   // 析构函数
   __host__ __device__ ~mmpool();
 
@@ -30,7 +31,7 @@ public:
   __host__ __device__ bool is_valid_block(int block_idx);
 
   // 添加节点到内存池中指定块
-  __host__ __device__ bool push_node(int block_idx, const T &node_data);
+  __device__ bool push_node(int block_idx, const T &node_data);
 
   // 查找内存池中指定行的指定下标的块
   __host__ __device__ node *get_node(int block_idx, int node_idx);
@@ -40,13 +41,24 @@ public:
 
   // 删除块（逻辑删除）
   __host__ __device__ bool remove_block(int block_idx);
-};
 
+  // 获取块的数量
+  __host__ __device__ int get_num_blocks() { return num_blocks; }
+
+  // 获取每个块的节点数量
+  __host__ __device__ int get_nodes_per_block() { return nodes_per_block; }
+};
 
 template <typename T>
 __host__ mmpool<T>::mmpool(int num_blocks, int nodes_per_block)
     : num_blocks(num_blocks), nodes_per_block(nodes_per_block) {
-  cudaMalloc(&nodes_pool, sizeof(node) * nodes_per_block * num_blocks);
+  cudaError_t error =
+      cudaMalloc(&nodes_pool, sizeof(node) * nodes_per_block * num_blocks);
+  if (error != cudaSuccess) {
+    printf("CUDA malloc failed: %s\n", cudaGetErrorString(error));
+    // 处理错误，如退出程序
+  }
+
   cudaMallocManaged(&block_used_nodes, sizeof(int) * num_blocks);
   cudaMallocManaged(&block_next_index, sizeof(int) * num_blocks);
 
@@ -56,6 +68,14 @@ __host__ mmpool<T>::mmpool(int num_blocks, int nodes_per_block)
     block_next_index[i] = (i == num_blocks - 1) ? -1 : i + 1;
   }
   now_empty_block_idx = 0;
+}
+
+template<typename T> __host__ __device__ size_t mmpool<T>::size() {
+  size_t size = 0;
+  for (int i = 0; i < num_blocks; ++i) {
+    size += block_used_nodes[i];
+  }
+  return size;
 }
 
 // 析构函数
@@ -80,8 +100,8 @@ __host__ __device__ bool mmpool<T>::is_valid_block(int block_idx) {
 
 // 添加节点到内存池
 template <typename T>
-__host__ __device__ bool mmpool<T>::push_node(int block_idx,
-                                              const T &node_data) {
+__device__ bool mmpool<T>::push_node(int block_idx,
+                                     const T &node_data) {
   if (!is_valid_block(block_idx)) {
     return false; // 无效块索引
   }
@@ -89,9 +109,14 @@ __host__ __device__ bool mmpool<T>::push_node(int block_idx,
     return false; // 块已满
   }
   node new_node(node_data);
-  nodes_pool[block_idx * nodes_per_block + block_used_nodes[block_idx]] =
-      new_node;
+
+  // 使用直接的设备端内存访问，而不是 cudaMemcpy
+  int index = atomicAdd(&block_used_nodes[block_idx], 1);
+  nodes_pool[block_idx * nodes_per_block + index] = new_node;
+
+  // 直接增加 block_used_nodes[block_idx]
   block_used_nodes[block_idx]++;
+
   return true;
 }
 
@@ -129,6 +154,5 @@ __host__ __device__ bool mmpool<T>::remove_block(int block_idx) {
   block_used_nodes[block_idx] = 0; // 逻辑删除，标记为未使用
   return true;
 }
-
 
 #endif

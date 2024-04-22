@@ -10,7 +10,12 @@ add_subdirectory(test)
 
 # 设置全局 CUDA 编译选项
 include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/memoryManagement/include)
+
 list(APPEND CUDA_NVCC_FLAGS "-std=c++17")
 list(APPEND CUDA_NVCC_FLAGS "-Xcompiler=-fPIC")
 list(APPEND CUDA_NVCC_FLAGS "--relocatable-device-code=true")
+list(APPEND CUDA_NVCC_FLAGS "-g")
+list(APPEND CUDA_NVCC_FLAGS "-G")
+
 set(CMAKE_CUDA_FLAGS "${CUDA_NVCC_FLAGS}")

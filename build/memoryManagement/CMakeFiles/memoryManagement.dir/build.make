@@ -69,47 +69,15 @@ include memoryManagement/CMakeFiles/memoryManagement.dir/progress.make
 # Include the compile flags for this target's objects.
 include memoryManagement/CMakeFiles/memoryManagement.dir/flags.make
 
-memoryManagement/CMakeFiles/memoryManagement.dir/src/cuda_vector.cu.o: memoryManagement/CMakeFiles/memoryManagement.dir/flags.make
-memoryManagement/CMakeFiles/memoryManagement.dir/src/cuda_vector.cu.o: ../memoryManagement/src/cuda_vector.cu
-memoryManagement/CMakeFiles/memoryManagement.dir/src/cuda_vector.cu.o: memoryManagement/CMakeFiles/memoryManagement.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CUDA object memoryManagement/CMakeFiles/memoryManagement.dir/src/cuda_vector.cu.o"
-	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/memoryManagement && /usr/local/cuda/bin/nvcc -forward-unknown-to-host-compiler $(CUDA_DEFINES) $(CUDA_INCLUDES) $(CUDA_FLAGS) -MD -MT memoryManagement/CMakeFiles/memoryManagement.dir/src/cuda_vector.cu.o -MF CMakeFiles/memoryManagement.dir/src/cuda_vector.cu.o.d -x cu -dc /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/memoryManagement/src/cuda_vector.cu -o CMakeFiles/memoryManagement.dir/src/cuda_vector.cu.o
-
-memoryManagement/CMakeFiles/memoryManagement.dir/src/cuda_vector.cu.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CUDA source to CMakeFiles/memoryManagement.dir/src/cuda_vector.cu.i"
-	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_PREPROCESSED_SOURCE
-
-memoryManagement/CMakeFiles/memoryManagement.dir/src/cuda_vector.cu.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CUDA source to assembly CMakeFiles/memoryManagement.dir/src/cuda_vector.cu.s"
-	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_ASSEMBLY_SOURCE
-
-memoryManagement/CMakeFiles/memoryManagement.dir/src/mmpool.cu.o: memoryManagement/CMakeFiles/memoryManagement.dir/flags.make
-memoryManagement/CMakeFiles/memoryManagement.dir/src/mmpool.cu.o: ../memoryManagement/src/mmpool.cu
-memoryManagement/CMakeFiles/memoryManagement.dir/src/mmpool.cu.o: memoryManagement/CMakeFiles/memoryManagement.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CUDA object memoryManagement/CMakeFiles/memoryManagement.dir/src/mmpool.cu.o"
-	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/memoryManagement && /usr/local/cuda/bin/nvcc -forward-unknown-to-host-compiler $(CUDA_DEFINES) $(CUDA_INCLUDES) $(CUDA_FLAGS) -MD -MT memoryManagement/CMakeFiles/memoryManagement.dir/src/mmpool.cu.o -MF CMakeFiles/memoryManagement.dir/src/mmpool.cu.o.d -x cu -dc /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/memoryManagement/src/mmpool.cu -o CMakeFiles/memoryManagement.dir/src/mmpool.cu.o
-
-memoryManagement/CMakeFiles/memoryManagement.dir/src/mmpool.cu.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CUDA source to CMakeFiles/memoryManagement.dir/src/mmpool.cu.i"
-	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_PREPROCESSED_SOURCE
-
-memoryManagement/CMakeFiles/memoryManagement.dir/src/mmpool.cu.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CUDA source to assembly CMakeFiles/memoryManagement.dir/src/mmpool.cu.s"
-	$(CMAKE_COMMAND) -E cmake_unimplemented_variable CMAKE_CUDA_CREATE_ASSEMBLY_SOURCE
-
 # Object files for target memoryManagement
-memoryManagement_OBJECTS = \
-"CMakeFiles/memoryManagement.dir/src/cuda_vector.cu.o" \
-"CMakeFiles/memoryManagement.dir/src/mmpool.cu.o"
+memoryManagement_OBJECTS =
 
 # External object files for target memoryManagement
 memoryManagement_EXTERNAL_OBJECTS =
 
-memoryManagement/libmemoryManagement.a: memoryManagement/CMakeFiles/memoryManagement.dir/src/cuda_vector.cu.o
-memoryManagement/libmemoryManagement.a: memoryManagement/CMakeFiles/memoryManagement.dir/src/mmpool.cu.o
 memoryManagement/libmemoryManagement.a: memoryManagement/CMakeFiles/memoryManagement.dir/build.make
 memoryManagement/libmemoryManagement.a: memoryManagement/CMakeFiles/memoryManagement.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CUDA static library libmemoryManagement.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Linking CUDA static library libmemoryManagement.a"
 	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/memoryManagement && $(CMAKE_COMMAND) -P CMakeFiles/memoryManagement.dir/cmake_clean_target.cmake
 	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/memoryManagement && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/memoryManagement.dir/link.txt --verbose=$(VERBOSE)
 

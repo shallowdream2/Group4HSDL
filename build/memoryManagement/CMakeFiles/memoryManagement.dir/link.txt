@@ -1,2 +1,2 @@
-/usr/bin/ar qc libmemoryManagement.a CMakeFiles/memoryManagement.dir/src/cuda_vector.cu.o CMakeFiles/memoryManagement.dir/src/mmpool.cu.o
+/usr/bin/ar qc libmemoryManagement.a 
 /usr/bin/ranlib libmemoryManagement.a

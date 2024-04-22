@@ -4,7 +4,7 @@
 # compile CUDA with /usr/local/cuda/bin/nvcc
 CUDA_DEFINES = 
 
-CUDA_INCLUDES = -I/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/test/../memoryManagement/include -I/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/memoryManagement/include
+CUDA_INCLUDES = -I/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/test/../memoryManagement/include
 
 CUDA_FLAGS =  --generate-code=arch=compute_75,code=[compute_75,sm_75]
 

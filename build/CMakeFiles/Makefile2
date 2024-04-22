@@ -114,12 +114,12 @@ test/clean: test/CMakeFiles/test_cuda_vector.dir/clean
 memoryManagement/CMakeFiles/memoryManagement.dir/all:
 	$(MAKE) $(MAKESILENT) -f memoryManagement/CMakeFiles/memoryManagement.dir/build.make memoryManagement/CMakeFiles/memoryManagement.dir/depend
 	$(MAKE) $(MAKESILENT) -f memoryManagement/CMakeFiles/memoryManagement.dir/build.make memoryManagement/CMakeFiles/memoryManagement.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles --progress-num=1,2,3 "Built target memoryManagement"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles --progress-num=1 "Built target memoryManagement"
 .PHONY : memoryManagement/CMakeFiles/memoryManagement.dir/all
 
 # Build rule for subdir invocation for target.
 memoryManagement/CMakeFiles/memoryManagement.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles 3
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles 1
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 memoryManagement/CMakeFiles/memoryManagement.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles 0
 .PHONY : memoryManagement/CMakeFiles/memoryManagement.dir/rule
@@ -140,12 +140,12 @@ memoryManagement/CMakeFiles/memoryManagement.dir/clean:
 test/CMakeFiles/test_cuda_vector.dir/all: memoryManagement/CMakeFiles/memoryManagement.dir/all
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cuda_vector.dir/build.make test/CMakeFiles/test_cuda_vector.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cuda_vector.dir/build.make test/CMakeFiles/test_cuda_vector.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles --progress-num=4,5,6 "Built target test_cuda_vector"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles --progress-num=2,3,4 "Built target test_cuda_vector"
 .PHONY : test/CMakeFiles/test_cuda_vector.dir/all
 
 # Build rule for subdir invocation for target.
 test/CMakeFiles/test_cuda_vector.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles 6
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles 4
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_cuda_vector.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles 0
 .PHONY : test/CMakeFiles/test_cuda_vector.dir/rule

@@ -1,42 +1,43 @@
 #ifndef CUDA_VECTOR_CUH
 #define CUDA_VECTOR_CUH
 #include "mmpool.cuh"
-#include <cuda_runtime.h>
 #include <cassert>
+#include <cuda_runtime.h>
 // include log
 #include <iostream>
-#define log(x) std::cout << x << std::endl;
+// log function which can be used in device code
+__host__ __device__ void log(const char *message) { printf("%s\n", message); }
 
-template <typename T>
-class cuda_vector {
+template <typename T> class cuda_vector {
 private:
-    mmpool<T>& pool;
-    size_t current_size;
-    size_t capacity; // 当前vector的容量, 以块为单位
-    int *block_idx_array;
-    int blocks;
+  mmpool<T> *pool;
+  size_t current_size;
+  size_t capacity; // 当前vector的容量, 以块为单位
+  int *block_idx_array;
+  int blocks;
 
 public:
-    __host__ __device__ cuda_vector(mmpool<T>& pool); // 初始块大小可以根据需求调整
+  __host__ __device__
+  cuda_vector(mmpool<T> *pool); // 初始块大小可以根据需求调整
 
-    __host__ __device__ ~cuda_vector();
+  __host__ __device__ ~cuda_vector();
 
-   __device__ bool push_back(const T& value);
-    __device__ T& operator[](size_t index);
-    //const T& operator[](size_t index) const;
-    __device__ void clear();
-    __device__ size_t size() const { return current_size; }
-    __device__ bool empty() const { return current_size == 0; }
+  __device__ bool push_back(const T &value);
+  __device__ T &operator[](size_t index);
+  // const T& operator[](size_t index) const;
+  __host__ __device__ void clear();
+  __device__ size_t size() const { return current_size; }
+  __device__ bool empty() const { return current_size == 0; }
 };
 
-
-template <typename T> __host__ __device__ cuda_vector<T>::cuda_vector(mmpool<T> &pool) {
-  this->pool = pool;
+template <typename T>
+__host__ __device__ cuda_vector<T>::cuda_vector(mmpool<T> *pool) : pool(pool) {
+  this->blocks = 0;
   this->current_size = 0;
   this->capacity = 100;
 
   //申请空行
-  int block_idx = pool.find_available_block();
+  int block_idx = pool->find_available_block();
   if (block_idx == -1) {
     //没有空行，申请失败
     log("No available block in mmpool");
@@ -44,15 +45,20 @@ template <typename T> __host__ __device__ cuda_vector<T>::cuda_vector(mmpool<T> 
   }
   this->block_idx_array = new int[capacity];
   this->block_idx_array[this->blocks++] = block_idx;
+
+  // copy to cuda
+  cudaMallocManaged(&this->block_idx_array, sizeof(int) * capacity);
 };
 
-template <typename T> __device__ bool cuda_vector<T>::push_back(const T &value) {
+template <typename T>
+__device__ bool cuda_vector<T>::push_back(const T &value) {
   //找到当前vector的最后一个节点
   int last_block_idx = this->block_idx_array[this->blocks - 1];
+  printf("last_block_idx:%d\n", last_block_idx);
   //判断当前块是否已满
-  if (pool.is_full_block(last_block_idx)) {
+  if (pool->is_full_block(last_block_idx)) {
     //当前块已满，申请新块
-    int block_idx = pool.find_available_block();
+    int block_idx = pool->find_available_block();
     if (block_idx == -1) {
       //没有空行，申请失败
       log("No available block in mmpool");
@@ -62,7 +68,7 @@ template <typename T> __device__ bool cuda_vector<T>::push_back(const T &value) 
     last_block_idx = block_idx;
   }
   //添加节点
-  if (this->pool.push_node(last_block_idx, value)) {
+  if (this->pool->push_node(last_block_idx, value)) {
     this->current_size++;
     return true;
   }
@@ -70,38 +76,39 @@ template <typename T> __device__ bool cuda_vector<T>::push_back(const T &value) 
 };
 
 template <typename T> __device__ T &cuda_vector<T>::operator[](size_t index) {
-    if(index >= this->current_size){
-      log("Index out of range");
-      // error
-      cudaError_t error = cudaGetLastError();
-      
-      assert(error == cudaErrorMemoryAllocation);
-      return nullptr;
-    }
-    //找到对应的块
-    int block_idx = this->block_idx_array + index / pool.nodes_per_block;
-    //找到对应的节点
-    int node_idx = index % pool.nodes_per_block;
-    //返回节点
-    return pool.get_node(block_idx, node_idx)->data;
+  if (index >= this->current_size) {
+    log("Index out of range");
+    // error
+    cudaError_t error = cudaGetLastError();
+
+    assert(error == cudaErrorMemoryAllocation);
+    // return nullptr;
+  }
+  //找到对应的块
+  int block_idx = this->block_idx_array[index / pool->get_nodes_per_block()];
+  //找到对应的节点
+  int node_idx = index % pool->get_nodes_per_block();
+  //返回节点
+  return pool->get_node(block_idx, node_idx)->data;
 };
 
-template <typename T> __device__ void cuda_vector<T>::clear() {
-    //释放所有块
-    for (int i = 0; i < this->blocks; i++) {
-        pool.remove_block(this->block_idx_array[i]);
-    }
-    //释放block_idx_array
-    delete[] this->block_idx_array;
-    this->blocks = 0;
-    this->current_size = 0;
+template <typename T> __host__ __device__ void cuda_vector<T>::clear() {
+  //释放所有块
+  for (int i = 0; i < this->blocks; i++) {
+    pool->remove_block(this->block_idx_array[i]);
+  }
+  //释放block_idx_array
+  delete[] this->block_idx_array;
+  this->blocks = 0;
+  this->current_size = 0;
 };
 
 template <typename T> __host__ __device__ cuda_vector<T>::~cuda_vector() {
-    clear();
+  clear();
 };
 
-
-
+//显式声明模板类
+template class cuda_vector<int>;
+template class cuda_vector<float>;
 
 #endif

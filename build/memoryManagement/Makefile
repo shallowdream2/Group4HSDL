@@ -130,54 +130,6 @@ memoryManagement/fast:
 	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build && $(MAKE) $(MAKESILENT) -f memoryManagement/CMakeFiles/memoryManagement.dir/build.make memoryManagement/CMakeFiles/memoryManagement.dir/build
 .PHONY : memoryManagement/fast
 
-src/cuda_vector.o: src/cuda_vector.cu.o
-.PHONY : src/cuda_vector.o
-
-# target to build an object file
-src/cuda_vector.cu.o:
-	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build && $(MAKE) $(MAKESILENT) -f memoryManagement/CMakeFiles/memoryManagement.dir/build.make memoryManagement/CMakeFiles/memoryManagement.dir/src/cuda_vector.cu.o
-.PHONY : src/cuda_vector.cu.o
-
-src/cuda_vector.i: src/cuda_vector.cu.i
-.PHONY : src/cuda_vector.i
-
-# target to preprocess a source file
-src/cuda_vector.cu.i:
-	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build && $(MAKE) $(MAKESILENT) -f memoryManagement/CMakeFiles/memoryManagement.dir/build.make memoryManagement/CMakeFiles/memoryManagement.dir/src/cuda_vector.cu.i
-.PHONY : src/cuda_vector.cu.i
-
-src/cuda_vector.s: src/cuda_vector.cu.s
-.PHONY : src/cuda_vector.s
-
-# target to generate assembly for a file
-src/cuda_vector.cu.s:
-	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build && $(MAKE) $(MAKESILENT) -f memoryManagement/CMakeFiles/memoryManagement.dir/build.make memoryManagement/CMakeFiles/memoryManagement.dir/src/cuda_vector.cu.s
-.PHONY : src/cuda_vector.cu.s
-
-src/mmpool.o: src/mmpool.cu.o
-.PHONY : src/mmpool.o
-
-# target to build an object file
-src/mmpool.cu.o:
-	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build && $(MAKE) $(MAKESILENT) -f memoryManagement/CMakeFiles/memoryManagement.dir/build.make memoryManagement/CMakeFiles/memoryManagement.dir/src/mmpool.cu.o
-.PHONY : src/mmpool.cu.o
-
-src/mmpool.i: src/mmpool.cu.i
-.PHONY : src/mmpool.i
-
-# target to preprocess a source file
-src/mmpool.cu.i:
-	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build && $(MAKE) $(MAKESILENT) -f memoryManagement/CMakeFiles/memoryManagement.dir/build.make memoryManagement/CMakeFiles/memoryManagement.dir/src/mmpool.cu.i
-.PHONY : src/mmpool.cu.i
-
-src/mmpool.s: src/mmpool.cu.s
-.PHONY : src/mmpool.s
-
-# target to generate assembly for a file
-src/mmpool.cu.s:
-	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build && $(MAKE) $(MAKESILENT) -f memoryManagement/CMakeFiles/memoryManagement.dir/build.make memoryManagement/CMakeFiles/memoryManagement.dir/src/mmpool.cu.s
-.PHONY : src/mmpool.cu.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -187,12 +139,6 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... memoryManagement"
-	@echo "... src/cuda_vector.o"
-	@echo "... src/cuda_vector.i"
-	@echo "... src/cuda_vector.s"
-	@echo "... src/mmpool.o"
-	@echo "... src/mmpool.i"
-	@echo "... src/mmpool.s"
 .PHONY : help
 
 
