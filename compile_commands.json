@@ -1,0 +1,27 @@
+[
+{
+  "directory": "/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL",
+  "command": "/usr/local/bin/c++  -I/usr/local/cuda/targets/x86_64-linux/include -I/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/includes -I/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/sources -fPIC -o CMakeFiles/Group4HSDL.dir/sources/utilities/dijkstra.cpp.o -c /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/sources/utilities/dijkstra.cpp",
+  "file": "/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/sources/utilities/dijkstra.cpp"
+},
+{
+  "directory": "/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL",
+  "command": "/usr/local/bin/c++  -I/usr/local/cuda/targets/x86_64-linux/include -I/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/includes -I/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/sources -fPIC -o CMakeFiles/Group4HSDL.dir/sources/vgroup/gen_groups.cpp.o -c /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/sources/vgroup/gen_groups.cpp",
+  "file": "/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/sources/vgroup/gen_groups.cpp"
+},
+{
+  "directory": "/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/test",
+  "command": "/usr/local/cuda/bin/nvcc -forward-unknown-to-host-compiler  -I/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/includes -isystem=/usr/local/cuda/include  --generate-code=arch=compute_75,code=[compute_75,sm_75] -x cu -dc /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/test/test_cuda_vector.cu -o CMakeFiles/test_cuda_vector.dir/test_cuda_vector.cu.o",
+  "file": "/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/test/test_cuda_vector.cu"
+},
+{
+  "directory": "/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/test",
+  "command": "/usr/local/bin/c++  -I/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/includes  -o CMakeFiles/test_readGraph.dir/test_readGraph.cpp.o -c /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/test/test_readGraph.cpp",
+  "file": "/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/test/test_readGraph.cpp"
+},
+{
+  "directory": "/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/test",
+  "command": "/usr/local/bin/c++  -I/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/includes  -o CMakeFiles/test_dijkstra.dir/test_dijkstra.cpp.o -c /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/test/test_dijkstra.cpp",
+  "file": "/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/test/test_dijkstra.cpp"
+}
+]

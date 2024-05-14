@@ -63,40 +63,26 @@ CMAKE_BINARY_DIR = /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: memoryManagement/all
+all: CMakeFiles/Group4HSDL.dir/all
 all: test/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
-preinstall: memoryManagement/preinstall
 preinstall: test/preinstall
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: memoryManagement/clean
+clean: CMakeFiles/Group4HSDL.dir/clean
 clean: test/clean
 .PHONY : clean
-
-#=============================================================================
-# Directory level rules for directory memoryManagement
-
-# Recursive "all" directory target.
-memoryManagement/all: memoryManagement/CMakeFiles/memoryManagement.dir/all
-.PHONY : memoryManagement/all
-
-# Recursive "preinstall" directory target.
-memoryManagement/preinstall:
-.PHONY : memoryManagement/preinstall
-
-# Recursive "clean" directory target.
-memoryManagement/clean: memoryManagement/CMakeFiles/memoryManagement.dir/clean
-.PHONY : memoryManagement/clean
 
 #=============================================================================
 # Directory level rules for directory test
 
 # Recursive "all" directory target.
 test/all: test/CMakeFiles/test_cuda_vector.dir/all
+test/all: test/CMakeFiles/test_readGraph.dir/all
+test/all: test/CMakeFiles/test_dijkstra.dir/all
 .PHONY : test/all
 
 # Recursive "preinstall" directory target.
@@ -105,47 +91,49 @@ test/preinstall:
 
 # Recursive "clean" directory target.
 test/clean: test/CMakeFiles/test_cuda_vector.dir/clean
+test/clean: test/CMakeFiles/test_readGraph.dir/clean
+test/clean: test/CMakeFiles/test_dijkstra.dir/clean
 .PHONY : test/clean
 
 #=============================================================================
-# Target rules for target memoryManagement/CMakeFiles/memoryManagement.dir
+# Target rules for target CMakeFiles/Group4HSDL.dir
 
 # All Build rule for target.
-memoryManagement/CMakeFiles/memoryManagement.dir/all:
-	$(MAKE) $(MAKESILENT) -f memoryManagement/CMakeFiles/memoryManagement.dir/build.make memoryManagement/CMakeFiles/memoryManagement.dir/depend
-	$(MAKE) $(MAKESILENT) -f memoryManagement/CMakeFiles/memoryManagement.dir/build.make memoryManagement/CMakeFiles/memoryManagement.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles --progress-num=1 "Built target memoryManagement"
-.PHONY : memoryManagement/CMakeFiles/memoryManagement.dir/all
+CMakeFiles/Group4HSDL.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Group4HSDL.dir/build.make CMakeFiles/Group4HSDL.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Group4HSDL.dir/build.make CMakeFiles/Group4HSDL.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles --progress-num=1,2,3 "Built target Group4HSDL"
+.PHONY : CMakeFiles/Group4HSDL.dir/all
 
 # Build rule for subdir invocation for target.
-memoryManagement/CMakeFiles/memoryManagement.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles 1
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 memoryManagement/CMakeFiles/memoryManagement.dir/all
+CMakeFiles/Group4HSDL.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles 3
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/Group4HSDL.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles 0
-.PHONY : memoryManagement/CMakeFiles/memoryManagement.dir/rule
+.PHONY : CMakeFiles/Group4HSDL.dir/rule
 
 # Convenience name for target.
-memoryManagement: memoryManagement/CMakeFiles/memoryManagement.dir/rule
-.PHONY : memoryManagement
+Group4HSDL: CMakeFiles/Group4HSDL.dir/rule
+.PHONY : Group4HSDL
 
 # clean rule for target.
-memoryManagement/CMakeFiles/memoryManagement.dir/clean:
-	$(MAKE) $(MAKESILENT) -f memoryManagement/CMakeFiles/memoryManagement.dir/build.make memoryManagement/CMakeFiles/memoryManagement.dir/clean
-.PHONY : memoryManagement/CMakeFiles/memoryManagement.dir/clean
+CMakeFiles/Group4HSDL.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Group4HSDL.dir/build.make CMakeFiles/Group4HSDL.dir/clean
+.PHONY : CMakeFiles/Group4HSDL.dir/clean
 
 #=============================================================================
 # Target rules for target test/CMakeFiles/test_cuda_vector.dir
 
 # All Build rule for target.
-test/CMakeFiles/test_cuda_vector.dir/all: memoryManagement/CMakeFiles/memoryManagement.dir/all
+test/CMakeFiles/test_cuda_vector.dir/all:
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cuda_vector.dir/build.make test/CMakeFiles/test_cuda_vector.dir/depend
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cuda_vector.dir/build.make test/CMakeFiles/test_cuda_vector.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles --progress-num=2,3,4 "Built target test_cuda_vector"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles --progress-num=4,5,6 "Built target test_cuda_vector"
 .PHONY : test/CMakeFiles/test_cuda_vector.dir/all
 
 # Build rule for subdir invocation for target.
 test/CMakeFiles/test_cuda_vector.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles 3
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_cuda_vector.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles 0
 .PHONY : test/CMakeFiles/test_cuda_vector.dir/rule
@@ -158,6 +146,58 @@ test_cuda_vector: test/CMakeFiles/test_cuda_vector.dir/rule
 test/CMakeFiles/test_cuda_vector.dir/clean:
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cuda_vector.dir/build.make test/CMakeFiles/test_cuda_vector.dir/clean
 .PHONY : test/CMakeFiles/test_cuda_vector.dir/clean
+
+#=============================================================================
+# Target rules for target test/CMakeFiles/test_readGraph.dir
+
+# All Build rule for target.
+test/CMakeFiles/test_readGraph.dir/all:
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_readGraph.dir/build.make test/CMakeFiles/test_readGraph.dir/depend
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_readGraph.dir/build.make test/CMakeFiles/test_readGraph.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles --progress-num=9,10 "Built target test_readGraph"
+.PHONY : test/CMakeFiles/test_readGraph.dir/all
+
+# Build rule for subdir invocation for target.
+test/CMakeFiles/test_readGraph.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_readGraph.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles 0
+.PHONY : test/CMakeFiles/test_readGraph.dir/rule
+
+# Convenience name for target.
+test_readGraph: test/CMakeFiles/test_readGraph.dir/rule
+.PHONY : test_readGraph
+
+# clean rule for target.
+test/CMakeFiles/test_readGraph.dir/clean:
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_readGraph.dir/build.make test/CMakeFiles/test_readGraph.dir/clean
+.PHONY : test/CMakeFiles/test_readGraph.dir/clean
+
+#=============================================================================
+# Target rules for target test/CMakeFiles/test_dijkstra.dir
+
+# All Build rule for target.
+test/CMakeFiles/test_dijkstra.dir/all: CMakeFiles/Group4HSDL.dir/all
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_dijkstra.dir/build.make test/CMakeFiles/test_dijkstra.dir/depend
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_dijkstra.dir/build.make test/CMakeFiles/test_dijkstra.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles --progress-num=7,8 "Built target test_dijkstra"
+.PHONY : test/CMakeFiles/test_dijkstra.dir/all
+
+# Build rule for subdir invocation for target.
+test/CMakeFiles/test_dijkstra.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles 5
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_dijkstra.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles 0
+.PHONY : test/CMakeFiles/test_dijkstra.dir/rule
+
+# Convenience name for target.
+test_dijkstra: test/CMakeFiles/test_dijkstra.dir/rule
+.PHONY : test_dijkstra
+
+# clean rule for target.
+test/CMakeFiles/test_dijkstra.dir/clean:
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_dijkstra.dir/build.make test/CMakeFiles/test_dijkstra.dir/clean
+.PHONY : test/CMakeFiles/test_dijkstra.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

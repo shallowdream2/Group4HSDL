@@ -92,7 +92,7 @@ test_cuda_vector_EXTERNAL_OBJECTS =
 
 test/CMakeFiles/test_cuda_vector.dir/cmake_device_link.o: test/CMakeFiles/test_cuda_vector.dir/test_cuda_vector.cu.o
 test/CMakeFiles/test_cuda_vector.dir/cmake_device_link.o: test/CMakeFiles/test_cuda_vector.dir/build.make
-test/CMakeFiles/test_cuda_vector.dir/cmake_device_link.o: memoryManagement/libmemoryManagement.a
+test/CMakeFiles/test_cuda_vector.dir/cmake_device_link.o: /usr/local/cuda/lib64/libcudart.so
 test/CMakeFiles/test_cuda_vector.dir/cmake_device_link.o: test/CMakeFiles/test_cuda_vector.dir/dlink.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CUDA device code CMakeFiles/test_cuda_vector.dir/cmake_device_link.o"
 	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/test && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/test_cuda_vector.dir/dlink.txt --verbose=$(VERBOSE)
@@ -110,7 +110,7 @@ test_cuda_vector_EXTERNAL_OBJECTS =
 
 test/test_cuda_vector: test/CMakeFiles/test_cuda_vector.dir/test_cuda_vector.cu.o
 test/test_cuda_vector: test/CMakeFiles/test_cuda_vector.dir/build.make
-test/test_cuda_vector: memoryManagement/libmemoryManagement.a
+test/test_cuda_vector: /usr/local/cuda/lib64/libcudart.so
 test/test_cuda_vector: test/CMakeFiles/test_cuda_vector.dir/cmake_device_link.o
 test/test_cuda_vector: test/CMakeFiles/test_cuda_vector.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CUDA executable test_cuda_vector"

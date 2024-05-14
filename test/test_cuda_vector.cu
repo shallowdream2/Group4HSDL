@@ -1,11 +1,11 @@
-#include "cuda_vector.cuh" // 确保包含正确的头文件路径
-#include "mmpool.cuh"
+#include "memoryManagement/cuda_vector.cuh" // 确保包含正确的头文件路径
+#include "memoryManagement/mmpool.cuh"
 #include <cuda_runtime.h>
 #include <iostream>
 
 // 核函数，用于测试 cuda_vector 功能
 __global__ void test_vector(cuda_vector<int> *vec) {
-  int idx = threadIdx.x + blockIdx.x * blockDim.x;
+//  int idx = threadIdx.x + blockIdx.x * blockDim.x;
   // 在向量中添加一些元素
   printf("vec->size() = %d\n", vec->size());
   vec->push_back(2);
@@ -25,7 +25,7 @@ __global__ void test_vector(cuda_vector<int> *vec) {
 }
 
 __global__ void test_pool(mmpool<int> *pool) {
-  int idx = threadIdx.x + blockIdx.x * blockDim.x;
+//  int idx = threadIdx.x + blockIdx.x * blockDim.x;
   // 在向量中添加一些元素
   printf("pool->size() = %d\n", pool->size());
   if (pool->push_node(2, 1)) {

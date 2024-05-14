@@ -1,8 +1,8 @@
+/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles/Group4HSDL.dir
 /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles/edit_cache.dir
 /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/CMakeFiles/rebuild_cache.dir
-/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/memoryManagement/CMakeFiles/memoryManagement.dir
-/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/memoryManagement/CMakeFiles/edit_cache.dir
-/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/memoryManagement/CMakeFiles/rebuild_cache.dir
 /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/test/CMakeFiles/test_cuda_vector.dir
+/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/test/CMakeFiles/test_readGraph.dir
+/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/test/CMakeFiles/test_dijkstra.dir
 /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/test/CMakeFiles/edit_cache.dir
 /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/test/CMakeFiles/rebuild_cache.dir

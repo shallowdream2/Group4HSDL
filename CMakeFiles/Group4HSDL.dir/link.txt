@@ -1,0 +1,2 @@
+/usr/bin/ar qc libGroup4HSDL.a CMakeFiles/Group4HSDL.dir/sources/utilities/dijkstra.cpp.o CMakeFiles/Group4HSDL.dir/sources/vgroup/gen_groups.cpp.o
+/usr/bin/ranlib libGroup4HSDL.a

@@ -130,6 +130,34 @@ test_cuda_vector/fast:
 	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cuda_vector.dir/build.make test/CMakeFiles/test_cuda_vector.dir/build
 .PHONY : test_cuda_vector/fast
 
+# Convenience name for target.
+test/CMakeFiles/test_readGraph.dir/rule:
+	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_readGraph.dir/rule
+.PHONY : test/CMakeFiles/test_readGraph.dir/rule
+
+# Convenience name for target.
+test_readGraph: test/CMakeFiles/test_readGraph.dir/rule
+.PHONY : test_readGraph
+
+# fast build rule for target.
+test_readGraph/fast:
+	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_readGraph.dir/build.make test/CMakeFiles/test_readGraph.dir/build
+.PHONY : test_readGraph/fast
+
+# Convenience name for target.
+test/CMakeFiles/test_dijkstra.dir/rule:
+	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_dijkstra.dir/rule
+.PHONY : test/CMakeFiles/test_dijkstra.dir/rule
+
+# Convenience name for target.
+test_dijkstra: test/CMakeFiles/test_dijkstra.dir/rule
+.PHONY : test_dijkstra
+
+# fast build rule for target.
+test_dijkstra/fast:
+	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_dijkstra.dir/build.make test/CMakeFiles/test_dijkstra.dir/build
+.PHONY : test_dijkstra/fast
+
 test_cuda_vector.o: test_cuda_vector.cu.o
 .PHONY : test_cuda_vector.o
 
@@ -154,6 +182,54 @@ test_cuda_vector.cu.s:
 	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cuda_vector.dir/build.make test/CMakeFiles/test_cuda_vector.dir/test_cuda_vector.cu.s
 .PHONY : test_cuda_vector.cu.s
 
+test_dijkstra.o: test_dijkstra.cpp.o
+.PHONY : test_dijkstra.o
+
+# target to build an object file
+test_dijkstra.cpp.o:
+	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_dijkstra.dir/build.make test/CMakeFiles/test_dijkstra.dir/test_dijkstra.cpp.o
+.PHONY : test_dijkstra.cpp.o
+
+test_dijkstra.i: test_dijkstra.cpp.i
+.PHONY : test_dijkstra.i
+
+# target to preprocess a source file
+test_dijkstra.cpp.i:
+	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_dijkstra.dir/build.make test/CMakeFiles/test_dijkstra.dir/test_dijkstra.cpp.i
+.PHONY : test_dijkstra.cpp.i
+
+test_dijkstra.s: test_dijkstra.cpp.s
+.PHONY : test_dijkstra.s
+
+# target to generate assembly for a file
+test_dijkstra.cpp.s:
+	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_dijkstra.dir/build.make test/CMakeFiles/test_dijkstra.dir/test_dijkstra.cpp.s
+.PHONY : test_dijkstra.cpp.s
+
+test_readGraph.o: test_readGraph.cpp.o
+.PHONY : test_readGraph.o
+
+# target to build an object file
+test_readGraph.cpp.o:
+	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_readGraph.dir/build.make test/CMakeFiles/test_readGraph.dir/test_readGraph.cpp.o
+.PHONY : test_readGraph.cpp.o
+
+test_readGraph.i: test_readGraph.cpp.i
+.PHONY : test_readGraph.i
+
+# target to preprocess a source file
+test_readGraph.cpp.i:
+	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_readGraph.dir/build.make test/CMakeFiles/test_readGraph.dir/test_readGraph.cpp.i
+.PHONY : test_readGraph.cpp.i
+
+test_readGraph.s: test_readGraph.cpp.s
+.PHONY : test_readGraph.s
+
+# target to generate assembly for a file
+test_readGraph.cpp.s:
+	cd /mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_readGraph.dir/build.make test/CMakeFiles/test_readGraph.dir/test_readGraph.cpp.s
+.PHONY : test_readGraph.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -163,9 +239,17 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... test_cuda_vector"
+	@echo "... test_dijkstra"
+	@echo "... test_readGraph"
 	@echo "... test_cuda_vector.o"
 	@echo "... test_cuda_vector.i"
 	@echo "... test_cuda_vector.s"
+	@echo "... test_dijkstra.o"
+	@echo "... test_dijkstra.i"
+	@echo "... test_dijkstra.s"
+	@echo "... test_readGraph.o"
+	@echo "... test_readGraph.i"
+	@echo "... test_readGraph.s"
 .PHONY : help
 
 

@@ -44,11 +44,6 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/memoryManagement/cmake_install.cmake")
-endif()
-
-if(NOT CMAKE_INSTALL_LOCAL_ONLY)
-  # Include the install script for the subdirectory.
   include("/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/test/cmake_install.cmake")
 endif()
 

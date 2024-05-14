@@ -117,17 +117,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named memoryManagement
+# Target rules for targets named Group4HSDL
 
 # Build rule for target.
-memoryManagement: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 memoryManagement
-.PHONY : memoryManagement
+Group4HSDL: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 Group4HSDL
+.PHONY : Group4HSDL
 
 # fast build rule for target.
-memoryManagement/fast:
-	$(MAKE) $(MAKESILENT) -f memoryManagement/CMakeFiles/memoryManagement.dir/build.make memoryManagement/CMakeFiles/memoryManagement.dir/build
-.PHONY : memoryManagement/fast
+Group4HSDL/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Group4HSDL.dir/build.make CMakeFiles/Group4HSDL.dir/build
+.PHONY : Group4HSDL/fast
 
 #=============================================================================
 # Target rules for targets named test_cuda_vector
@@ -142,6 +142,80 @@ test_cuda_vector/fast:
 	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_cuda_vector.dir/build.make test/CMakeFiles/test_cuda_vector.dir/build
 .PHONY : test_cuda_vector/fast
 
+#=============================================================================
+# Target rules for targets named test_readGraph
+
+# Build rule for target.
+test_readGraph: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_readGraph
+.PHONY : test_readGraph
+
+# fast build rule for target.
+test_readGraph/fast:
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_readGraph.dir/build.make test/CMakeFiles/test_readGraph.dir/build
+.PHONY : test_readGraph/fast
+
+#=============================================================================
+# Target rules for targets named test_dijkstra
+
+# Build rule for target.
+test_dijkstra: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_dijkstra
+.PHONY : test_dijkstra
+
+# fast build rule for target.
+test_dijkstra/fast:
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_dijkstra.dir/build.make test/CMakeFiles/test_dijkstra.dir/build
+.PHONY : test_dijkstra/fast
+
+sources/utilities/dijkstra.o: sources/utilities/dijkstra.cpp.o
+.PHONY : sources/utilities/dijkstra.o
+
+# target to build an object file
+sources/utilities/dijkstra.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Group4HSDL.dir/build.make CMakeFiles/Group4HSDL.dir/sources/utilities/dijkstra.cpp.o
+.PHONY : sources/utilities/dijkstra.cpp.o
+
+sources/utilities/dijkstra.i: sources/utilities/dijkstra.cpp.i
+.PHONY : sources/utilities/dijkstra.i
+
+# target to preprocess a source file
+sources/utilities/dijkstra.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Group4HSDL.dir/build.make CMakeFiles/Group4HSDL.dir/sources/utilities/dijkstra.cpp.i
+.PHONY : sources/utilities/dijkstra.cpp.i
+
+sources/utilities/dijkstra.s: sources/utilities/dijkstra.cpp.s
+.PHONY : sources/utilities/dijkstra.s
+
+# target to generate assembly for a file
+sources/utilities/dijkstra.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Group4HSDL.dir/build.make CMakeFiles/Group4HSDL.dir/sources/utilities/dijkstra.cpp.s
+.PHONY : sources/utilities/dijkstra.cpp.s
+
+sources/vgroup/gen_groups.o: sources/vgroup/gen_groups.cpp.o
+.PHONY : sources/vgroup/gen_groups.o
+
+# target to build an object file
+sources/vgroup/gen_groups.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Group4HSDL.dir/build.make CMakeFiles/Group4HSDL.dir/sources/vgroup/gen_groups.cpp.o
+.PHONY : sources/vgroup/gen_groups.cpp.o
+
+sources/vgroup/gen_groups.i: sources/vgroup/gen_groups.cpp.i
+.PHONY : sources/vgroup/gen_groups.i
+
+# target to preprocess a source file
+sources/vgroup/gen_groups.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Group4HSDL.dir/build.make CMakeFiles/Group4HSDL.dir/sources/vgroup/gen_groups.cpp.i
+.PHONY : sources/vgroup/gen_groups.cpp.i
+
+sources/vgroup/gen_groups.s: sources/vgroup/gen_groups.cpp.s
+.PHONY : sources/vgroup/gen_groups.s
+
+# target to generate assembly for a file
+sources/vgroup/gen_groups.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Group4HSDL.dir/build.make CMakeFiles/Group4HSDL.dir/sources/vgroup/gen_groups.cpp.s
+.PHONY : sources/vgroup/gen_groups.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -150,8 +224,16 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... memoryManagement"
+	@echo "... Group4HSDL"
 	@echo "... test_cuda_vector"
+	@echo "... test_dijkstra"
+	@echo "... test_readGraph"
+	@echo "... sources/utilities/dijkstra.o"
+	@echo "... sources/utilities/dijkstra.i"
+	@echo "... sources/utilities/dijkstra.s"
+	@echo "... sources/vgroup/gen_groups.o"
+	@echo "... sources/vgroup/gen_groups.i"
+	@echo "... sources/vgroup/gen_groups.s"
 .PHONY : help
 
 
