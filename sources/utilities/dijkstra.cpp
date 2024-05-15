@@ -1,8 +1,9 @@
 #include "utilities/dijkstra.h"
+#include <unordered_set>
 
 dijkstra_table::dijkstra_table(graph_v_of_v<int> &g, bool is_weighted, int k,
-                 vector<int> sources)
-      : graph(g), is_weighted(is_weighted), k(k) {
+                               vector<int> sources)
+    : graph(g), is_weighted(is_weighted), k(k),source_set(unordered_set<int>(sources.begin(),sources.end())) {
     for (auto &s : sources) {
       runDijkstra(s);
     }

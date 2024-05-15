@@ -8,6 +8,7 @@ find_package(CUDAToolkit REQUIRED)
 add_executable(test_cuda_vector test_cuda_vector.cu)
 add_executable(test_readGraph test_readGraph.cpp)
 add_executable(test_dijkstra test_dijkstra.cpp)
+add_executable(test_gen_groups test_gen_groups.cpp)
 
 # 包含头文件目录
 include_directories(${CMAKE_SOURCE_DIR}/includes)
@@ -19,6 +20,7 @@ target_sources(test_cuda_vector PRIVATE ${MEMORY_MANAGEMENT_SOURCES})
 # 链接库
 target_link_libraries(test_cuda_vector PRIVATE CUDA::cudart)
 target_link_libraries(test_dijkstra PRIVATE Group4HSDL)
+target_link_libraries(test_gen_groups PRIVATE Group4HSDL)
 
 # 设置CUDA可分离编译
 set_target_properties(test_cuda_vector PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
