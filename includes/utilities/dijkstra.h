@@ -28,4 +28,9 @@ public:
     source_set.insert(s);
     runDijkstra(s);
   }
+  void add_source(vector<int> &s) {
+    for (auto it : s) {
+      add_source(it);
+    }
+  }
 };

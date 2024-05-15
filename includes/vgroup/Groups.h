@@ -23,7 +23,7 @@ void generate_Group_kmeans(graph_v_of_v<int> &instance_graph, int group_num,
 // func
 inline void print_groups(std::unordered_map<int, std::vector<int>> &groups) {
   for (auto it : groups) {
-    printf("center: %d\n,", it.first);
+    printf("center: %d\n", it.first);
     for (auto it2 : it.second) {
       printf("%d ",it2);
     }

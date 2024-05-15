@@ -11,7 +11,7 @@ int main() {
   graph_v_of_v<int> graph;
   graph.txt_read(DATASET_PATH);
   std::unordered_map<int, std::vector<int>> groups;
-  generate_Group_kmeans(graph, 10, 10, groups);
+  generate_Group_kmeans(graph, 10, 20, groups);
   print_groups(groups);
   
 

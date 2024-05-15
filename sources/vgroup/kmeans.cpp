@@ -1,55 +1,74 @@
+#include "graph/graph_v_of_v.h"
 #include "utilities/dijkstra.h"
 #include "vgroup/Groups.h"
 #include <algorithm>
+
 using namespace std;
+
+vector<int> get_centers(vector<pair<int, int>> &graph, int &start,
+                        vector<bool> &chosen, int nums) {
+  vector<int> temp_v;
+  for (; temp_v.size() < nums && start < graph.size(); ++start) {
+    if (!chosen[start]) {
+      temp_v.push_back(start);
+      chosen[start] = 1;
+    }
+  }
+  return temp_v;
+}
 
 void generate_Group_kmeans(graph_v_of_v<int> &instance_graph, int group_num,
                            int hop_cst,
                            std::unordered_map<int, std::vector<int>> &groups) {
+
+  // initialization
   int n = instance_graph.size();
-  vector<int> centers(group_num);
+  // vector<int> centers(group_num, -1);
+  vector<bool> chosen(n, false);
   vector<int> labels(n, -1);
 
-  // 1. 无重复的随机选择group_num个点作为初始的聚类中心
-  for (int i = 0; i < group_num; ++i) {
-    do {
-      centers[i] = rand() % n;
-    } while (find(centers.begin(), centers.end(), centers[i]) !=
-             centers.begin() + i);
+  //将每个点和其度数构成pair，然后按度数从大到小排序
+  vector<pair<int, int>> degree;
+  for (int i = 0; i < instance_graph.size(); ++i) {
+    degree.push_back(make_pair(i, instance_graph[i].size()));
   }
+  sort(degree.begin(), degree.end(),
+       [&](pair<int, int> a, pair<int, int> b) { return a.second > b.second; });
 
-  dijkstra_table dt(instance_graph, false, hop_cst, centers);
+  //初始化dijkstra table
+  dijkstra_table dt(instance_graph, false, hop_cst);
 
-  bool changed = 1;
+  // 选取group_num个点作为初始的centers
+  int start = 0;
+
+  bool changed = true;
   while (changed) {
     changed = false;
-    // 2.
-    // 对于每个点，计算它到每个聚类中心的距离，将它划分到距离最近的聚类中心所在的类中
+
+    vector<int> temp_centers = get_centers(degree, start, chosen, group_num);
+    dt.add_source(temp_centers);
+    // Assign nodes to the nearest cluster center
     for (int i = 0; i < n; ++i) {
       int nearest_center = -1;
-      double min_distance = numeric_limits<int>::max();
-      for (int j = 0; j < group_num; ++j) {
-        double distance = dt.query_distance(centers[j], i);
-        //printf("source:%d,dst:%d,dis:%lf\n", i, j, distance);
-        if (distance < min_distance) {
-          nearest_center = j;
+      double min_distance = numeric_limits<double>::max();
+      for (auto it : temp_centers) {
+        double distance = dt.query_distance(it, i);
+        if (distance <= min_distance) {
+          nearest_center = it;
           min_distance = distance;
+          chosen[i] = true;
         }
       }
-      if (labels[i] != nearest_center) {
+      if (nearest_center != -1 && nearest_center != labels[i]) {
         labels[i] = nearest_center;
         changed = true;
       }
+      if (labels[i] == -1) {
+        changed = true;
+      }
     }
+  }
 
-    // 3.
-    // 重新计算聚类中心（这个步骤在图聚类中略有不同，因为我们不能简单地取平均值）
-    // 这里我们留空，因为重新计算聚类中心在图中意义不大，通常保持选择的中心不变
-
-  } // 如果在一轮迭代中聚类结果没有变化，则算法结束
-
-
-  
   // 根据最终的labels数组构建groups输出
   for (int i = 0; i < n; ++i) {
     groups[labels[i]].push_back(i);
