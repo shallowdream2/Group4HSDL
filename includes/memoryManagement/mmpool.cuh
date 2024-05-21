@@ -2,6 +2,8 @@
 #define MMPOOL_CUH
 #include <cuda_runtime.h>
 #include <iostream>
+
+
 template <typename T> class mmpool {
 private:
   struct node {
@@ -111,6 +113,7 @@ __device__ bool mmpool<T>::push_node(int block_idx,
   node new_node(node_data);
 
   // 使用直接的设备端内存访问，而不是 cudaMemcpy
+
   int index = atomicAdd(&block_used_nodes[block_idx], 1);
   nodes_pool[block_idx * nodes_per_block + index] = new_node;
 

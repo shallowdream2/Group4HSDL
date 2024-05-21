@@ -1,12 +1,18 @@
 #ifndef CUDA_VECTOR_CUH
 #define CUDA_VECTOR_CUH
-#include "mmpool.cuh"
+
+
+#include "memoryManagement/mmpool.cuh"
 #include <cassert>
 #include <cuda_runtime.h>
 // include log
 #include <iostream>
+#include "label/hop_constrained_two_hop_labels.h"
 // log function which can be used in device code
 __host__ __device__ void log(const char *message) { printf("%s\n", message); }
+#define data_type hop_constrained_two_hop_label
+
+
 
 template <typename T> class cuda_vector {
 private:
@@ -110,5 +116,6 @@ template <typename T> __host__ __device__ cuda_vector<T>::~cuda_vector() {
 //显式声明模板类
 template class cuda_vector<int>;
 template class cuda_vector<float>;
+template class cuda_vector<data_type>;
 
 #endif
