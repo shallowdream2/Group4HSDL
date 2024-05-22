@@ -1,18 +1,17 @@
 #ifndef CUDA_VECTOR_CUH
 #define CUDA_VECTOR_CUH
 
-
 #include "memoryManagement/mmpool.cuh"
 #include <cassert>
 #include <cuda_runtime.h>
 // include log
+#include "label/hop_constrained_two_hop_labels.cuh"
 #include <iostream>
-#include "label/hop_constrained_two_hop_labels.h"
 // log function which can be used in device code
-__host__ __device__ void log(const char *message) { printf("%s\n", message); }
+inline __host__ __device__ void mylog(const char *message) {
+  printf("%s\n", message);
+}
 #define data_type hop_constrained_two_hop_label
-
-
 
 template <typename T> class cuda_vector {
 private:
@@ -21,19 +20,21 @@ private:
   size_t capacity; // 当前vector的容量, 以块为单位
   int *block_idx_array;
   int blocks;
+  int lock = false;
 
 public:
-  __host__
-  cuda_vector(mmpool<T> *pool); // 初始块大小可以根据需求调整
+  __host__ cuda_vector(mmpool<T> *pool); // 初始块大小可以根据需求调整
 
   __host__ __device__ ~cuda_vector();
 
   __device__ bool push_back(const T &value);
-  __device__ T &operator[](size_t index);
+  __device__ __host__ T &operator[](size_t index);
   // const T& operator[](size_t index) const;
   __host__ __device__ void clear();
-  __device__ size_t size() const { return current_size; }
+  __host__ __device__ size_t size() const { return current_size; }
   __device__ bool empty() const { return current_size == 0; }
+  __host__ void copy_to_cpu(size_t index, T *cpu_ptr);
+  __device__ __host__ T *get_device_ptr(size_t index);
 };
 
 template <typename T>
@@ -46,7 +47,7 @@ __host__ cuda_vector<T>::cuda_vector(mmpool<T> *pool) : pool(pool) {
   int block_idx = pool->find_available_block();
   if (block_idx == -1) {
     //没有空行，申请失败
-    log("No available block in mmpool");
+    mylog("No available block in mmpool");
     return;
   }
   this->block_idx_array = new int[capacity];
@@ -58,16 +59,22 @@ __host__ cuda_vector<T>::cuda_vector(mmpool<T> *pool) : pool(pool) {
 
 template <typename T>
 __device__ bool cuda_vector<T>::push_back(const T &value) {
+  // 将此操作放在一个事务中，以确保线程安全
+  // 事务开始
+  while (atomicCAS(&this->lock, 0, 1) != 0)
+    ;
+
   //找到当前vector的最后一个节点
   int last_block_idx = this->block_idx_array[this->blocks - 1];
-  printf("last_block_idx:%d\n", last_block_idx);
+  // printf("last_block_idx:%d\n", last_block_idx);
   //判断当前块是否已满
   if (pool->is_full_block(last_block_idx)) {
     //当前块已满，申请新块
     int block_idx = pool->find_available_block();
     if (block_idx == -1) {
       //没有空行，申请失败
-      log("No available block in mmpool");
+      mylog("No available block in mmpool");
+      atomicExch(&this->lock, 0);
       return false;
     }
     this->block_idx_array[this->blocks++] = block_idx;
@@ -76,14 +83,18 @@ __device__ bool cuda_vector<T>::push_back(const T &value) {
   //添加节点
   if (this->pool->push_node(last_block_idx, value)) {
     this->current_size++;
+    atomicExch(&this->lock, 0);
     return true;
   }
+
+  atomicExch(&this->lock, 0);
   return false;
 };
 
-template <typename T> __device__ T &cuda_vector<T>::operator[](size_t index) {
+template <typename T>
+__device__ __host__ T &cuda_vector<T>::operator[](size_t index) {
   if (index >= this->current_size) {
-    log("Index out of range");
+    mylog("Index out of range");
     // error
     cudaError_t error = cudaGetLastError();
 
@@ -112,6 +123,19 @@ template <typename T> __host__ __device__ void cuda_vector<T>::clear() {
 template <typename T> __host__ __device__ cuda_vector<T>::~cuda_vector() {
   clear();
 };
+
+template <typename T>
+__device__ __host__ T *cuda_vector<T>::get_device_ptr(size_t index) {
+  return &((*this)[index]);
+}
+template <typename T>
+__host__ void cuda_vector<T>::copy_to_cpu(size_t index, T *cpu_ptr) {
+  // 获取cuda_vector[i]的GPU地址
+  // 将cuda_vector[i]的值复制到CPU的某个地址
+  T *device_ptr = get_device_ptr(index);
+  // 将 cuda_vector[i] 的值复制到 CPU 的某个地址
+  cudaMemcpy(cpu_ptr, device_ptr, sizeof(T), cudaMemcpyDeviceToHost);
+}
 
 //显式声明模板类
 template class cuda_vector<int>;

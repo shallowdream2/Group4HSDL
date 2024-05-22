@@ -22,6 +22,7 @@ set(CUDA_NVCC_FLAGS
     "--relocatable-device-code=true"
     "-g"
     "-G"
+    "--expt-relaxed-constexpr"
 )
 # 将 CUDA 编译选项应用到 CMake CUDA FLAGS
 string(JOIN " " CMAKE_CUDA_FLAGS ${CUDA_NVCC_FLAGS})
@@ -33,22 +34,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #设置C++ FALGS
 set(CMAKE_CXX_FLAGS "-O2")
 
-# 设置 源文件目录
-set(SRC_DIRS 
-    "sources"
-    "sources/utilities"
-    "sources/vgroup"
-    "includes/graph"
-    "includes/memoryManagement"
-    "includes/text_mining"
-    "includes/tool_functions"
-    "includes/vgroup"
-)
+
 file(GLOB_RECURSE SRC_FILES 
     "sources/*.cpp"
     "sources/*.cu"
-    # "includes/*.h"
-    # "includes/*.cuh"
+    "includes/*.h"
+    "includes/*.cuh"
 )
 
 add_library(${PROJECT_NAME} ${SRC_FILES})

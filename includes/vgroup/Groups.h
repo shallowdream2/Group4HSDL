@@ -13,7 +13,7 @@
 
 //#include <cpp_redis/cpp_redis>
 
-#define vertex_subset std::unordered_set<int>
+#define vertex_groups std::unordered_map<int, std::vector<int>>
 
 // algo
 void generate_Group_kmeans(graph_v_of_v<int> &instance_graph, int group_num,

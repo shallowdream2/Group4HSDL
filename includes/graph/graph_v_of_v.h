@@ -331,16 +331,6 @@ ARRAY_graph<weight_type> graph_v_of_v<weight_type>::toARRAY() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
 inline void graph_v_of_v_example() {
 
 	/*

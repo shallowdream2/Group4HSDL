@@ -2,7 +2,7 @@
 #define MMPOOL_CUH
 #include <cuda_runtime.h>
 #include <iostream>
-
+#include <mutex>
 
 template <typename T> class mmpool {
 private:
@@ -20,6 +20,8 @@ private:
   int num_blocks;        // 块的数量
   int nodes_per_block;   // 每个块的节点数量
   int now_empty_block_idx;
+  int lock = 0; // gpu mtx
+  std::mutex mtx;
 
 public:
   // 构造函数
@@ -49,6 +51,8 @@ public:
 
   // 获取每个块的节点数量
   __host__ __device__ int get_nodes_per_block() { return nodes_per_block; }
+
+
 };
 
 template <typename T>
@@ -72,7 +76,7 @@ __host__ mmpool<T>::mmpool(int num_blocks, int nodes_per_block)
   now_empty_block_idx = 0;
 }
 
-template<typename T> __host__ __device__ size_t mmpool<T>::size() {
+template <typename T> __host__ __device__ size_t mmpool<T>::size() {
   size_t size = 0;
   for (int i = 0; i < num_blocks; ++i) {
     size += block_used_nodes[i];
@@ -102,8 +106,7 @@ __host__ __device__ bool mmpool<T>::is_valid_block(int block_idx) {
 
 // 添加节点到内存池
 template <typename T>
-__device__ bool mmpool<T>::push_node(int block_idx,
-                                     const T &node_data) {
+__device__ bool mmpool<T>::push_node(int block_idx, const T &node_data) {
   if (!is_valid_block(block_idx)) {
     return false; // 无效块索引
   }
@@ -118,7 +121,7 @@ __device__ bool mmpool<T>::push_node(int block_idx,
   nodes_pool[block_idx * nodes_per_block + index] = new_node;
 
   // 直接增加 block_used_nodes[block_idx]
-  block_used_nodes[block_idx]++;
+  // block_used_nodes[block_idx]++;
 
   return true;
 }
@@ -126,18 +129,48 @@ __device__ bool mmpool<T>::push_node(int block_idx,
 // 查找空块
 template <typename T>
 __host__ __device__ int mmpool<T>::find_available_block() {
-  for (int i = now_empty_block_idx; i < num_blocks; ++i) {
+//使用锁来保护
+// 如果在gpu上运行，使用原子操作
+// 如果在cpu上运行，使用互斥锁
+
+//使用宏检测环境
+#ifndef __CUDA_ARCH__
+  //获取锁
+  mtx.lock(); // 获取锁
+
+  int block_idx = -1;
+  for (int i = 0; i < num_blocks; i++) {
     if (block_used_nodes[i] == 0) {
-      return i;
+      block_idx = i;
+      break;
     }
   }
-  return -1; // 没有可用块
+
+  mtx.unlock(); // 释放锁
+  return block_idx;
+
+#else
+  while (atomicCAS(&this->lock, 0, 1) != 0)
+    ;
+  // 获取锁
+
+  int block_idx = -1;
+  for (int i = 0; i < num_blocks; i++) {
+    if (block_used_nodes[i] == 0) {
+      block_idx = i;
+      break;
+    }
+  }
+
+  atomicExch(&this->lock, 0); // 释放锁
+  return block_idx;
+#endif
 }
 
 // 查找内存池中指定行的指定下标的块
 template <typename T>
-__host__ __device__ mmpool<T>::node *mmpool<T>::get_node(int block_idx,
-                                                         int node_idx) {
+__host__ __device__ typename mmpool<T>::node *
+mmpool<T>::get_node(int block_idx, int node_idx) {
   if (!is_valid_block(block_idx)) {
     return NULL; // 无效块索引
   }
