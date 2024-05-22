@@ -9,8 +9,7 @@
 #include <cuda_runtime.h>
 using namespace std;
 /* label format */
-class hop_constrained_two_hop_label {
-public:
+struct hop_constrained_two_hop_label {
   int hub_vertex, parent_vertex, hop;
   double distance;
 

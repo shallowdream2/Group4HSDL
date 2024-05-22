@@ -46,8 +46,8 @@ __global__ void test_pool(mmpool<int> *pool) {
 
 int main() {
   mmpool<int> *pool;
-  cudaMallocManaged(&pool, sizeof(mmpool<int>)); // 创建统一内存的对象
-  new (pool) mmpool<int>(10, 100);               // 调用构造函数
+  cudaMallocManaged(&pool, sizeof(mmpool<int>)); // 在cuda上分配内存
+  new (pool) mmpool<int>(10);               // 调用构造函数，在cuda分配的内存上构造对象
 
   test_pool<<<1, 1>>>(pool);
   cudaDeviceSynchronize(); // 等待核函数完成

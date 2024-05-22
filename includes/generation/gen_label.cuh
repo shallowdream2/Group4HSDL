@@ -6,6 +6,6 @@
 #include "vgroup/kmeans.h"
 #include "graph/graph_v_of_v.h"
 
-__host__ gen_labels_gpu(graph_v_of_v<int>&G,)
+__host__ gen_labels_gpu(graph_v_of_v<int>*G ,hop_constrained_case_info *info,)
 
 #endif

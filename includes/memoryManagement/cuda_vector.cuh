@@ -5,13 +5,14 @@
 #include <cassert>
 #include <cuda_runtime.h>
 // include log
+#include "definition/hub_def.h"
 #include "label/hop_constrained_two_hop_labels.cuh"
 #include <iostream>
 // log function which can be used in device code
 inline __host__ __device__ void mylog(const char *message) {
   printf("%s\n", message);
 }
-#define data_type hop_constrained_two_hop_label
+//#define data_type hop_constrained_two_hop_label
 
 template <typename T> class cuda_vector {
 private:
@@ -35,6 +36,7 @@ public:
   __device__ bool empty() const { return current_size == 0; }
   __host__ void copy_to_cpu(size_t index, T *cpu_ptr);
   __device__ __host__ T *get_device_ptr(size_t index);
+  __device__ __host__ T at(size_t index) { return (*this)[index]; }
 };
 
 template <typename T>
@@ -45,16 +47,20 @@ __host__ cuda_vector<T>::cuda_vector(mmpool<T> *pool) : pool(pool) {
 
   //申请空行
   int block_idx = pool->find_available_block();
+  // printf("block_idx:%d\n\n", block_idx);
   if (block_idx == -1) {
     //没有空行，申请失败
     mylog("No available block in mmpool");
     return;
   }
-  this->block_idx_array = new int[capacity];
-  this->block_idx_array[this->blocks++] = block_idx;
 
   // copy to cuda
   cudaMallocManaged(&this->block_idx_array, sizeof(int) * capacity);
+  // this->block_idx_array[this->blocks] = block_idx;
+  // this->blocks += 1;
+  cudaMemcpy(this->block_idx_array, &block_idx, sizeof(int),
+             cudaMemcpyHostToDevice);
+  this->blocks += 1;
 };
 
 template <typename T>
@@ -106,6 +112,7 @@ __device__ __host__ T &cuda_vector<T>::operator[](size_t index) {
   //找到对应的节点
   int node_idx = index % pool->get_nodes_per_block();
   //返回节点
+  // printf("block_idx:%d, node_idx:%d\n", block_idx, node_idx);
   return pool->get_node(block_idx, node_idx)->data;
 };
 
@@ -140,6 +147,6 @@ __host__ void cuda_vector<T>::copy_to_cpu(size_t index, T *cpu_ptr) {
 //显式声明模板类
 template class cuda_vector<int>;
 template class cuda_vector<float>;
-template class cuda_vector<data_type>;
+template class cuda_vector<hub_type>;
 
 #endif

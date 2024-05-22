@@ -1,0 +1,50 @@
+├── CMakeLists.txt
+├── README.md
+├── compile_commands.json
+├── includes
+│   ├── definition
+│   │   ├── hub_def.h
+│   │   └── mmpool_size.h
+│   ├── generation
+│   │   ├── cuda_query.cuh
+│   │   ├── cuda_sort_label.h
+│   │   └── gen_label.cuh
+│   ├── graph
+│   │   └── graph_v_of_v.h
+│   ├── label
+│   │   ├── global_labels.cuh
+│   │   └── hop_constrained_two_hop_labels.cuh
+│   ├── memoryManagement
+│   │   ├── cuda_vector.cuh
+│   │   └── mmpool.cuh
+│   ├── text_mining
+│   │   ├── ......
+│   ├── tool_functions
+│   │   ├── ......
+│   ├── utilities
+│   │   └── dijkstra.h
+│   └── vgroup
+│       ├── CT-Kmeans.h
+│       ├── Groups.h
+│       ├── kmeans.h
+│       └── louvain.h
+├── sources
+│   ├── generation
+│   │   └── cuda_query.cu
+│   ├── label
+│   │   ├── gen_label.cu
+│   │   ├── global_labels.cu
+│   │   └── hop_constrained_two_hop_labels.cu
+│   ├── utilities
+│   │   └── dijkstra.cpp
+│   └── vgroup
+│       └── kmeans.cpp
+└── test
+    ├── CMakeLists.txt
+    ├── test_cuda_vector.cu
+    ├── test_dijkstra.cpp
+    ├── test_gen_groups.cpp
+    ├── test_globla_labels.cu
+    ├── test_query_cuda.cu
+    └── test_readGraph.cpp
+

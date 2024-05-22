@@ -1,9 +1,9 @@
 #ifndef MMPOOL_CUH
 #define MMPOOL_CUH
+#include "definition/mmpool_size.h"
 #include <cuda_runtime.h>
 #include <iostream>
 #include <mutex>
-
 template <typename T> class mmpool {
 private:
   struct node {
@@ -18,14 +18,14 @@ private:
   int *block_used_nodes; // 每个块中已使用节点的数量
   int *block_next_index; // 下一个块的索引
   int num_blocks;        // 块的数量
-  int nodes_per_block;   // 每个块的节点数量
+  // int nodes_per_block;   // 每个块的节点数量,-1表示未分配
   int now_empty_block_idx;
   int lock = 0; // gpu mtx
   std::mutex mtx;
 
 public:
   // 构造函数
-  __host__ mmpool(int num_blocks = 100, int nodes_per_block = 100);
+  __host__ mmpool(int num_blocks = 100);
   __host__ __device__ size_t size();
   // 析构函数
   __host__ __device__ ~mmpool();
@@ -41,7 +41,7 @@ public:
   __host__ __device__ node *get_node(int block_idx, int node_idx);
 
   // 查找空块
-  __host__ __device__ int find_available_block();
+  __host__ __device__ int find_available_block(bool mark_used = true);
 
   // 删除块（逻辑删除）
   __host__ __device__ bool remove_block(int block_idx);
@@ -51,13 +51,10 @@ public:
 
   // 获取每个块的节点数量
   __host__ __device__ int get_nodes_per_block() { return nodes_per_block; }
-
-
 };
 
 template <typename T>
-__host__ mmpool<T>::mmpool(int num_blocks, int nodes_per_block)
-    : num_blocks(num_blocks), nodes_per_block(nodes_per_block) {
+__host__ mmpool<T>::mmpool(int num_blocks) : num_blocks(num_blocks) {
   cudaError_t error =
       cudaMalloc(&nodes_pool, sizeof(node) * nodes_per_block * num_blocks);
   if (error != cudaSuccess) {
@@ -70,7 +67,7 @@ __host__ mmpool<T>::mmpool(int num_blocks, int nodes_per_block)
 
   // 初始化每个块
   for (int i = 0; i < num_blocks; ++i) {
-    block_used_nodes[i] = 0;
+    block_used_nodes[i] = -1;
     block_next_index[i] = (i == num_blocks - 1) ? -1 : i + 1;
   }
   now_empty_block_idx = 0;
@@ -128,7 +125,7 @@ __device__ bool mmpool<T>::push_node(int block_idx, const T &node_data) {
 
 // 查找空块
 template <typename T>
-__host__ __device__ int mmpool<T>::find_available_block() {
+__host__ __device__ int mmpool<T>::find_available_block(bool mark_used) {
 //使用锁来保护
 // 如果在gpu上运行，使用原子操作
 // 如果在cpu上运行，使用互斥锁
@@ -140,10 +137,13 @@ __host__ __device__ int mmpool<T>::find_available_block() {
 
   int block_idx = -1;
   for (int i = 0; i < num_blocks; i++) {
-    if (block_used_nodes[i] == 0) {
+    if (block_used_nodes[i] == -1) {
       block_idx = i;
       break;
     }
+  }
+  if (mark_used && block_idx != -1 && block_used_nodes[block_idx] == -1) {
+    block_used_nodes[block_idx] = 0;
   }
 
   mtx.unlock(); // 释放锁
@@ -156,10 +156,13 @@ __host__ __device__ int mmpool<T>::find_available_block() {
 
   int block_idx = -1;
   for (int i = 0; i < num_blocks; i++) {
-    if (block_used_nodes[i] == 0) {
+    if (block_used_nodes[i] == -1) {
       block_idx = i;
       break;
     }
+  }
+  if (mark_used && block_idx != -1 && block_used_nodes[block_idx] == -1) {
+    block_used_nodes[block_idx] = 0;
   }
 
   atomicExch(&this->lock, 0); // 释放锁
