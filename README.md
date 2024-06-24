@@ -1,6 +1,10 @@
 # Group4HSDL
 This is a  repository for rucgraph GPU Project
 
+## Environment
+- CUDA 11.8
+- gcc 11.4.0
+
 ## Build && Test
 - clone the repository
 ```bash

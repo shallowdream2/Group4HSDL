@@ -6,9 +6,10 @@
 #include <unordered_set>
 // 优先队列
 #include <queue>
+#include <definition/hub_def.h>
 using namespace std;
 
-#define disType double
+//#define disType double
 #define entry tuple<disType, int, int> // <distance, previous node,hops>
 
 class dijkstra_table {

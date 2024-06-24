@@ -1,3 +1,4 @@
+#include "definition/hub_def.h"
 #include "generation/cuda_query.cuh"
 #include <cfloat>
 #include <cuda_runtime.h>
@@ -14,7 +15,7 @@ __device__ float atomicMin(float* address, float val)
     return __int_as_float(old);
 }
 
-__global__ void find_mindis_hops(int hop_cst, cuda_vector<hub_type> *vec1, cuda_vector<hub_type> *vec2, hub_type *result_vec1, hub_type *result_vec2) {
+__global__ void query_mindis_with_hub(int hop_cst, cuda_vector<hub_type> *vec1, cuda_vector<hub_type> *vec2, hub_type *result_vec1, hub_type *result_vec2,disType* distance) {
     int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
     __shared__ float min_dis;
@@ -71,6 +72,10 @@ __global__ void find_mindis_hops(int hop_cst, cuda_vector<hub_type> *vec1, cuda_
 
     if (threadIdx.x == 0) {
         *result_vec1 = hub_type(min_hub1_vertex, min_hub1_parent, min_hub1_hop, min_hub1_dis);
-        *result_vec2 = hub_type(min_hub2_vertex, min_hub2_parent, min_hub2_hop, min_hub2_dis);
+        *result_vec2 = hub_type(min_hub2_vertex, min_hub2_parent, min_hub2_hop,
+                                min_hub2_dis);
+        *distance = min_dis;
     }
 }
+
+
