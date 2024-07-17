@@ -9,7 +9,7 @@ __device__ float atomicMin(float* address, float val);
 
 
 /**
- * @brief 此函数用于在两个hop向量中找到最小的距离，返回对应的hop
+ * @brief 此函数用于在两个hop向量中找到最小的距离，返回对应的hub
  * 
  * @param hop_cst 
  * @param vec1 
@@ -23,4 +23,11 @@ __global__ void query_mindis_with_hub(int hop_cst, cuda_vector<hub_type> *vec1,
                                  hub_type *result_vec1, hub_type *result_vec2,disType* distance);
 
 
+
+__device__ void query_mindis_with_hub_device(int hop_cst, 
+                                      cuda_vector<hub_type> *vec1, 
+                                      cuda_vector<hub_type> *vec2, 
+                                      hub_type *result_vec1, 
+                                      hub_type *result_vec2, 
+                                      disType *distance);
 #endif

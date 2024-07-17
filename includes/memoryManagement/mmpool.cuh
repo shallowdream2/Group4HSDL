@@ -5,6 +5,7 @@
 #include <iostream>
 #include <mutex>
 template <typename T> class mmpool {
+
 private:
   struct node {
     T data;
@@ -19,9 +20,11 @@ private:
   int *block_next_index; // 下一个块的索引
   int num_blocks;        // 块的数量
   // int nodes_per_block;   // 每个块的节点数量,-1表示未分配
-  int now_empty_block_idx;
+  // int now_empty_block_idx;
   int lock = 0; // gpu mtx
   std::mutex mtx;
+
+  int last_empty_block_idx = 0; //上一个空行的索引
 
 public:
   // 构造函数
@@ -34,7 +37,7 @@ public:
 
   __host__ __device__ bool is_valid_block(int block_idx);
 
-  // 添加节点到内存池中指定块
+  // 添加节点到内存池中指定块尾
   __device__ bool push_node(int block_idx, const T &node_data);
 
   // 查找内存池中指定行的指定下标的块
@@ -46,17 +49,25 @@ public:
   // 删除块（逻辑删除）
   __host__ __device__ bool remove_block(int block_idx);
 
+  // 删除node（逻辑删除)
+  __host__ __device__ bool remove_node(int block_idx, int pos);
+
   // 获取块的数量
   __host__ __device__ int get_num_blocks() { return num_blocks; }
 
   // 获取每个块的节点数量
   __host__ __device__ int get_nodes_per_block() { return nodes_per_block; }
+
+  __host__ __device__ void set_block_user_nodes(int block_idx, int num) {
+    block_used_nodes[block_idx] = num;
+  }
+  
 };
 
 template <typename T>
 __host__ mmpool<T>::mmpool(int num_blocks) : num_blocks(num_blocks) {
   cudaError_t error =
-      cudaMalloc(&nodes_pool, sizeof(node) * nodes_per_block * num_blocks);
+      cudaMallocManaged(&nodes_pool, sizeof(node) * nodes_per_block * num_blocks);
   if (error != cudaSuccess) {
     printf("CUDA malloc failed: %s\n", cudaGetErrorString(error));
     // 处理错误，如退出程序
@@ -70,7 +81,7 @@ __host__ mmpool<T>::mmpool(int num_blocks) : num_blocks(num_blocks) {
     block_used_nodes[i] = -1;
     block_next_index[i] = (i == num_blocks - 1) ? -1 : i + 1;
   }
-  now_empty_block_idx = 0;
+  //now_empty_block_idx = 0;
 }
 
 template <typename T> __host__ __device__ size_t mmpool<T>::size() {
@@ -136,9 +147,10 @@ __host__ __device__ int mmpool<T>::find_available_block(bool mark_used) {
   mtx.lock(); // 获取锁
 
   int block_idx = -1;
-  for (int i = 0; i < num_blocks; i++) {
+  for (int i = last_empty_block_idx; i < num_blocks; i++) {
     if (block_used_nodes[i] == -1) {
       block_idx = i;
+      last_empty_block_idx = i + 1;
       break;
     }
   }
@@ -155,9 +167,10 @@ __host__ __device__ int mmpool<T>::find_available_block(bool mark_used) {
   // 获取锁
 
   int block_idx = -1;
-  for (int i = 0; i < num_blocks; i++) {
+  for (int i = last_empty_block_idx; i < num_blocks; i++) {
     if (block_used_nodes[i] == -1) {
       block_idx = i;
+      last_empty_block_idx = i + 1;
       break;
     }
   }
@@ -192,6 +205,44 @@ __host__ __device__ bool mmpool<T>::remove_block(int block_idx) {
 
   block_used_nodes[block_idx] = 0; // 逻辑删除，标记为未使用
   return true;
+}
+
+template <typename T>
+__host__ __device__ bool mmpool<T>::remove_node(int block_idx, int node_idx) {
+  //  if (!is_valid_block(block_idx)) {
+  //   return false; // 无效块索引
+  //  }
+  //  if (node_idx < 0 || node_idx >= block_used_nodes[block_idx]) {
+  //   return false; // 无效节点索引
+  //  }
+
+  // lock
+  //使用宏检测环境
+#ifndef __CUDA_ARCH__
+  //获取锁
+  mtx.lock(); // 获取锁
+
+  node *temp = this->get_node(block_idx, node_idx);
+  if (temp->is_used || temp==NULL)
+    return false;
+  temp->is_used = true;
+
+  mtx.unlock(); // 释放锁
+  return true;
+
+#else
+  while (atomicCAS(&this->lock, 0, 1) != 0)
+    ;
+  // 获取锁
+
+  node *temp = this->get_node(block_idx, node_idx);
+  if (temp->is_used|| temp==NULL)
+    return false;
+  temp->is_used = true;
+
+  atomicExch(&this->lock, 0); // 释放锁
+  return true;
+#endif
 }
 
 #endif

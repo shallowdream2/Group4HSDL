@@ -1,5 +1,6 @@
 #ifndef HOP_CONSTRAINED_TWO_HOP_LABELS_H
 #define HOP_CONSTRAINED_TWO_HOP_LABELS_H
+#include "definition/hub_def.h"
 #pragma once
 
 #include <iostream>
@@ -11,9 +12,9 @@ using namespace std;
 /* label format */
 struct hop_constrained_two_hop_label {
   int hub_vertex, parent_vertex, hop;
-  double distance;
+  weight_type distance;
 
-  __device__ __host__ hop_constrained_two_hop_label(int hv, int pv, int h, double d)
+  __device__ __host__ hop_constrained_two_hop_label(int hv, int pv, int h, weight_type d)
       : hub_vertex(hv), parent_vertex(pv), hop(h), distance(d) {}
    __device__ __host__ hop_constrained_two_hop_label() {}
   // copy
@@ -70,11 +71,11 @@ inline  __device__ __host__ bool operator<(hop_constrained_two_hop_label const &
 
 
 
- __device__ __host__ int hop_constrained_extract_distance(
-    vector<vector<hop_constrained_two_hop_label>> &L, int source, int terminal,
-    int hop_cst);
+//  __device__ __host__ int hop_constrained_extract_distance(
+//     vector<vector<hop_constrained_two_hop_label>> &L, int source, int terminal,
+//     int hop_cst);
 
- __device__ __host__ vector<pair<int, int>> hop_constrained_extract_shortest_path(
-    vector<vector<hop_constrained_two_hop_label>> &L, int source, int terminal,
-    int hop_cst); 
+//  __device__ __host__ vector<pair<int, int>> hop_constrained_extract_shortest_path(
+//     vector<vector<hop_constrained_two_hop_label>> &L, int source, int terminal,
+//     int hop_cst); 
 #endif // HOP_CONSTRAINED_TWO_HOP_LABELS_H

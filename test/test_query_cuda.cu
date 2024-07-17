@@ -43,8 +43,8 @@ void test_find_mindis_hops() {
   //计时
   cudaEvent_t start, stop;
   cudaEventCreate(&start);
-  find_mindis_hops<<<1, 256>>>(hop_cst, d_vec1, d_vec2, d_result_vec1,
-                               d_result_vec2);
+  query_mindis_with_hub<<<1, 256>>>(hop_cst, d_vec1, d_vec2, d_result_vec1,
+                               d_result_vec2, 0);
   cudaDeviceSynchronize();
   cudaEventCreate(&stop);
   float elapsedTime;

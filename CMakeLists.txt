@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.18)
 project(Group4HSDL LANGUAGES CXX CUDA)
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # 设置 CUDA 架构
-set(CMAKE_CUDA_ARCHITECTURES 75)  # 根据您的 GPU 修改
+# set(CMAKE_CUDA_ARCHITECTURES 75)  # 根据您的 GPU 修改
 
 # 添加子目录
 add_subdirectory(test)

@@ -13,14 +13,13 @@ __global__ void test_vector(cuda_vector<int> *vec) {
     printf("push_back(1) success\n");
   }
   printf("vec->size() = %lu\n", vec->size());
-  printf("add:%d\n", vec->operator[](0) + vec->operator[](1));
 
   // 确保所有线程都已完成写操作
   __syncthreads();
   if (threadIdx.x == 0 && blockIdx.x == 0){
     printf("vec->size() = %lu\n", vec->size());
     for(int i = 0; i < vec->size(); i++){
-      printf("vec[%d] = %d\n", i, vec->operator[](i));
+      printf("vec[%d] = %d\n", i, *(vec->get(i)));
     }
   }
   // if (idx < vec->size()) {
