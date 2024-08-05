@@ -10,9 +10,12 @@
 #include "vgroup/kmeans.h"
 #include "definition/hub_def.h"
 #include "memoryManagement/cuda_hashTable.cuh"
+#include "generation/cuda_sort.cuh"
+#include "generation/cuda_clean_label.cuh"
 
-void gen_labels_gpu(graph_v_of_v<weight_type> *G, hop_constrained_case_info *info,
-                    int upper_bound);
+void gen_labels_gpu(graph_v_of_v<weight_type> *G,
+                    hop_constrained_case_info *info, int upper_bound);
+
 __global__ void gen_labels_kernel_vertex_level(gpu_Graph *d_g,
                                                cuda_vector<hub_type> **L_gpu,
                                                cuda_hashTable<int,int>* L_hash,

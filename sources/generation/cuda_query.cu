@@ -1,7 +1,9 @@
 #include "definition/hub_def.h"
 #include "generation/cuda_query.cuh"
 #include <cfloat>
+#include <cstddef>
 #include <cuda_runtime.h>
+#include <vector>
 
 __device__ float atomicMin(float *address, float val) {
   int *address_as_i = (int *)address;
@@ -100,25 +102,116 @@ query_mindis_with_hub_device(int hop_cst, cuda_vector<hub_type> *vec1,
       if (element1 && element2 &&
           element1->hub_vertex == element2->hub_vertex &&
           element1->hop + element2->hop <= hop_cst) {
-          disType dis = vec1->get(i)->distance + vec2->get(j)->distance;
-          if (dis < min_dis) {
-            min_dis = dis;
-            min_hub1_vertex = vec1->get(i)->hub_vertex;
-            min_hub1_hop = vec1->get(i)->hop;
-            min_hub1_dis = vec1->get(i)->distance;
-            min_hub2_vertex = vec2->get(j)->hub_vertex;
-            min_hub2_hop = vec2->get(j)->hop;
-            min_hub2_dis = vec2->get(j)->distance;
-            min_hub1_parent = vec1->get(i)->parent_vertex;
-            min_hub2_parent = vec2->get(j)->parent_vertex;
-          }
+        disType dis = vec1->get(i)->distance + vec2->get(j)->distance;
+        if (dis < min_dis) {
+          min_dis = dis;
+          min_hub1_vertex = vec1->get(i)->hub_vertex;
+          min_hub1_hop = vec1->get(i)->hop;
+          min_hub1_dis = vec1->get(i)->distance;
+          min_hub2_vertex = vec2->get(j)->hub_vertex;
+          min_hub2_hop = vec2->get(j)->hop;
+          min_hub2_dis = vec2->get(j)->distance;
+          min_hub1_parent = vec1->get(i)->parent_vertex;
+          min_hub2_parent = vec2->get(j)->parent_vertex;
         }
       }
     }
-
-    *result_vec1 =
-        hub_type(min_hub1_vertex, min_hub1_parent, min_hub1_hop, min_hub1_dis);
-    *result_vec2 =
-        hub_type(min_hub2_vertex, min_hub2_parent, min_hub2_hop, min_hub2_dis);
-    *distance = min_dis;
   }
+
+  *result_vec1 =
+      hub_type(min_hub1_vertex, min_hub1_parent, min_hub1_hop, min_hub1_dis);
+  *result_vec2 =
+      hub_type(min_hub2_vertex, min_hub2_parent, min_hub2_hop, min_hub2_dis);
+  *distance = min_dis;
+}
+
+__device__ __host__ void
+query_mindis_final(int hop_cst, cuda_label<hub_type> *vec1,
+                   cuda_label<hub_type> *vec2, int *result_vec1_index,
+                   int *result_vec2_index, disType *distance) {
+
+  if (vec1->vertex == vec2->vertex) {
+    *distance = 0;
+    *result_vec1_index = -1;
+    *result_vec2_index = -1;
+    return;
+  }
+  int i, j; //使用双指针
+  i = 0;
+  j = 0;
+  int size1 = vec1->length;
+  int size2 = vec2->length;
+  int min_dis = 1e9;
+
+  while (i < size1 && j < size2) {
+    //从hash表中找到对应的start和end
+
+    int hub1 = vec1->data[i].hub_vertex;
+    int hub2 = vec2->data[j].hub_vertex;
+    if (hub1 == -1) { //已经被删除
+      i++;
+      continue;
+    }
+    if (hub2 == -1) {
+      j++;
+      continue;
+    }
+
+   // printf("hub1: %d, hub2: %d\n", hub1, hub2);
+    int start1 = 0, end1 = i;
+    vec1->query_hub(hub1, &start1, &end1);
+    if (start1 == -1) {
+      // error，没有找到对应的hub，直接跳过
+      assert(false);
+      break;
+    }
+    if (hub1 < hub2) {
+      i = end1 + 1;
+      continue;
+    }
+
+    int start2 = 0, end2 = j;
+    vec2->query_hub(hub2, &start2, &end2);
+    if (start2 == -1) {
+      // error，没有找到对应的hub，直接跳过
+      assert(false);
+      break;
+    }
+
+    if (hub1 > hub2) {
+      j = end2 + 1;
+      continue;
+    }
+    //printf("start1: %d, end1: %d, start2: %d, end2: %d\n", start1, end1, start2,
+    //       end2);
+
+    int k = start1, l = start2;
+
+    while (k <= end1 && l <= end2) {
+      int hop1 = vec1->data[k].hop;
+      int hop2 = vec2->data[l].hop;
+
+      if (hop1 + hop2 <= hop_cst) {
+        weight_type dis = vec1->data[k].distance + vec2->data[l].distance;
+
+        if (dis < min_dis) {
+          min_dis = dis;
+          *result_vec1_index = k;
+          *result_vec2_index = l;
+        }
+        l++; // Try to find a better match by increasing the hop in the second
+             // vector
+      } else {
+        k++; // If the combined hop exceeds the limit, move the first pointer
+      }
+    }
+    if (i == end1 + 1 && j == end2 + 1) {
+      // 如果 i 和 j 都没有增加，说明可能陷入了死循环
+      assert(false);
+      break;
+    }
+    i = end1 + 1;
+    j = end2 + 1;
+  }
+  *distance = min_dis;
+}

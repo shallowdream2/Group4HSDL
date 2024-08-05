@@ -13,8 +13,8 @@ int main() {
 
   // init dijkstra
   dijkstra_table dijkstra(graph);
-  dijkstra.add_source(0);
-  cout<<dijkstra.query_distance(0,15);
+  dijkstra.add_source(2);
+  cout<<dijkstra.query_distance(2,3);
   
 
 }

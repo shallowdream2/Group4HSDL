@@ -1,6 +1,7 @@
 #ifndef CUDA_QUEUE_CUH
 #define CUDA_QUEUE_CUH
 
+#include "definition/hub_def.h"
 #include "definition/mmpool_size.h"
 #include "memoryManagement/cuda_vector.cuh"
 #include "memoryManagement/mmpool.cuh"
@@ -68,6 +69,6 @@ public:
 };
 
 //显式声明模板类
-template class cuda_queue<hub_type>;
+template <typename hub_type> class cuda_queue;
 
 #endif

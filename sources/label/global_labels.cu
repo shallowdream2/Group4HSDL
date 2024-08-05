@@ -23,10 +23,9 @@ __host__ void hop_constrained_case_info::destroy_L_cuda() {
     L_cuda[i].~cuda_vector<hub_type>(); // 调用析构函数
   }
   cudaFree(L_cuda);
-
-  mmpool_labels->~mmpool();
-  cudaFree(mmpool_labels);
 }
+
+
 
 // __host__ void hop_constrained_case_info::vector_gpu_to_cpu() {
 //   //将gpu的vector转移到cpu，先从gpu拷贝结果回来，然后再转移到cpu
