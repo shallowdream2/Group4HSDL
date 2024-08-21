@@ -31,6 +31,7 @@ public:
   void add_source(vector<int> &s) {
     for (auto it : s) {
       add_source(it);
+      runDijkstra(it);
     }
   }
 };

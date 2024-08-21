@@ -1,5 +1,5 @@
 //#include "graph/graph_v_of_v.h"
-#include "vgroup/Groups.h"
+#include "vgroup/Kmeans_group.h"
 
 #include <iostream>
 #define DATASET_PATH "/mnt/f/linux/rucgraph-HBPLL-GPU/data/euroroad2.txt"
@@ -11,7 +11,7 @@ int main() {
   graph_v_of_v<int> graph;
   graph.txt_read(DATASET_PATH);
   std::unordered_map<int, std::vector<int>> groups;
-  generate_Group_kmeans(graph, 10, 20, groups);
+  generate_Group_kmeans(graph,  5, groups);
   print_groups(groups);
   
 

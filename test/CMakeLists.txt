@@ -22,6 +22,7 @@ set(CPP_EXECUTABLES
     test_gen_groups
     test_ct_kmeans
     test_louvain
+    test_kmeans
 )
 
 # 添加可执行文件

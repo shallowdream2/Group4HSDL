@@ -7,7 +7,6 @@
 #include "label/hop_constrained_two_hop_labels.cuh"
 #include "memoryManagement/cuda_queue.cuh"
 #include "memoryManagement/cuda_vector.cuh"
-#include "vgroup/kmeans.h"
 #include "definition/hub_def.h"
 #include "memoryManagement/cuda_hashTable.cuh"
 #include "generation/cuda_sort.cuh"
