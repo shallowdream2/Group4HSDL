@@ -12,12 +12,12 @@ __global__ void test(hop_constrained_case_info *hcci) {
 }
 
 int main() {
-  hop_constrained_case_info *hcci;
-  cudaMallocManaged(&hcci, sizeof(hop_constrained_case_info));
-  hcci->init(1,1);
-  printf("init success\n");
-  test<<<1, 1>>>(hcci);
-  cudaDeviceSynchronize();
+  // hop_constrained_case_info *hcci;
+  // cudaMallocManaged(&hcci, sizeof(hop_constrained_case_info));
+  // hcci->init(1,1);
+  // printf("init success\n");
+  // test<<<1, 1>>>(hcci);
+  // cudaDeviceSynchronize();
 
   // hcci->vector_gpu_to_cpu();
   // for (auto &l : hcci->L_cpu) {

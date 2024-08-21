@@ -1,7 +1,17 @@
-void generate_Group_CT_cores(
+#ifndef CT_KMEANS_H
+#define CT_KMEANS_H
+
+#include "graph/graph_v_of_v.h"
+#include <vector>
+#include <unordered_set>
+#include "vgroup/CT/CT.hpp"
+#include "utilities/dijkstra.h"
+using namespace std;
+
+
+static void generate_Group_CT_cores(
     graph_v_of_v<int> &instance_graph,
-    hop_constrained_case_info &case_info, //暂时用作最短距离查询
-    int hop_cst, int group_num,
+    int hop_cst, 
     std::unordered_map<int, std::vector<int>> &groups) {
 
   int N = instance_graph.size();
@@ -9,6 +19,7 @@ void generate_Group_CT_cores(
   unordered_set<int> centers;
   // generate CT cores
   CT_case_info mm;
+  dijkstra_table dt(instance_graph,false, hop_cst);
   mm.d = 10;
   mm.use_P2H_pruning = 1;
   mm.two_hop_info.use_2M_prune = 1;
@@ -17,23 +28,28 @@ void generate_Group_CT_cores(
 
   CT_cores(instance_graph, mm);
   printf("CT_cores finished\n");
+
+
+
   for (int i = 0; i < N; i++) {
     if (mm.isIntree[i] == 0) {
       centers.insert(i);
+      dt.add_source(i);
+      dt.runDijkstra(i);
     }
   }
 
-  bool changed;
+  bool changed=true;
   while (changed) {
     changed = false;
     // 2.
     // 对于每个点，计算它到每个聚类中心的距离，将它划分到距离最近的聚类中心所在的类中
     for (int i = 0; i < N; ++i) {
       int nearest_center = -1;
-      int min_distance = numeric_limits<int>::max();
+      int min_distance = std::numeric_limits<int>::max();
       for (auto j : centers) {
-        int distance =
-            hop_constrained_extract_distance(case_info.L, i, j, hop_cst);
+        int distance = dt.query_distance(i, j);
+        //printf("distance %d %d %d\n", i, j, distance);
         if (distance < min_distance) {
           nearest_center = j;
           min_distance = distance;
@@ -51,3 +67,4 @@ void generate_Group_CT_cores(
     groups[labels[i]].push_back(i);
   }
 }
+#endif

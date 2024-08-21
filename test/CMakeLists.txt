@@ -4,48 +4,37 @@ project(Test LANGUAGES CXX CUDA)
 # 查找CUDA工具包
 find_package(CUDAToolkit REQUIRED)
 
-# 添加可执行文件
-add_executable(test_cuda_vector test_cuda_vector.cu)
-add_executable(test_readGraph test_readGraph.cpp)
-add_executable(test_dijkstra test_dijkstra.cpp)
-add_executable(test_gen_groups test_gen_groups.cpp)
-add_executable(test_globla_labels test_globla_labels.cu)
-add_executable(test_query_cuda test_query_cuda.cu)
-add_executable(test_generation test_generation.cu)
-add_executable(test_cuda_queue test_cuda_queue.cu)
-
 # 包含头文件目录
 include_directories(${CMAKE_SOURCE_DIR}/includes)
 
-# 如果 memoryManagement 中有源代码文件，这里需要添加它们
-# file(GLOB MEMORY_MANAGEMENT_SOURCES "${CMAKE_SOURCE_DIR}/includes/memoryManagement/*.cuh")
-# target_sources(test_cuda_vector PRIVATE ${MEMORY_MANAGEMENT_SOURCES})
+# 定义可执行文件和源文件列表
+set(CUDA_EXECUTABLES
+    test_cuda_vector
+    test_globla_labels
+    test_query_cuda
+    test_generation
+    test_cuda_queue
+)
 
-# file(GLOB GLOBAL_LABELS_SOURCES “)
+set(CPP_EXECUTABLES
+    test_readGraph
+    test_dijkstra
+    test_gen_groups
+    test_ct_kmeans
+    test_louvain
+)
 
-# 链接库cuda
-target_link_libraries(test_cuda_vector PRIVATE CUDA::cudart)
-target_link_libraries(test_globla_labels PRIVATE CUDA::cudart)
-target_link_libraries(test_query_cuda PRIVATE CUDA::cudart)
-target_link_libraries(test_generation PRIVATE CUDA::cudart)
-target_link_libraries(test_cuda_queue PRIVATE CUDA::cudart)
+# 添加可执行文件
+foreach(exec ${CUDA_EXECUTABLES})
+    add_executable(${exec} ${exec}.cu)
+    target_link_libraries(${exec} PRIVATE CUDA::cudart Group4HSDL)
+    set_target_properties(${exec} PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+endforeach()
 
-# 链接Group4HSDL库
-target_link_libraries(test_dijkstra PRIVATE Group4HSDL)
-target_link_libraries(test_gen_groups PRIVATE Group4HSDL)
-target_link_libraries(test_globla_labels PRIVATE Group4HSDL)
-target_link_libraries(test_query_cuda PRIVATE Group4HSDL)
-target_link_libraries(test_generation PRIVATE Group4HSDL)
-target_link_libraries(test_cuda_queue PRIVATE Group4HSDL)
+foreach(exec ${CPP_EXECUTABLES})
+    add_executable(${exec} ${exec}.cpp)
+    target_link_libraries(${exec} PRIVATE Group4HSDL)
+endforeach()
 
-
-# 设置CUDA可分离编译
-set_target_properties(test_cuda_vector PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-set_target_properties(test_globla_labels PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-set_target_properties(test_query_cuda PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-set_target_properties(test_generation PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-set_target_properties(test_cuda_queue PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
-
-
-# 设置标志
-target_compile_options(test_generation PRIVATE ${CUDA_NVCC_FLAGS})
+# 如果有特定的编译选项，可以在这里设置
+# target_compile_options(test_generation PRIVATE ${CUDA_NVCC_FLAGS})

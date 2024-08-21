@@ -26,8 +26,7 @@ struct hop_constrained_two_hop_label {
     hop = other.hop;
     distance = other.distance;
   }
-  __device__ __host__ bool
-  operator<(const hop_constrained_two_hop_label &y) const {
+  __device__ __host__ bool operator<(const hop_constrained_two_hop_label &y) const {
     //congregate the same hub_vertex into a continuous block, so we can use segment to find the label
     if(hub_vertex != y.hub_vertex){
       return hub_vertex < y.hub_vertex;

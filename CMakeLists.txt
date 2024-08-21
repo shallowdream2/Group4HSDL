@@ -34,7 +34,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Set C++ compile flags
-set(CMAKE_CXX_FLAGS "-O2")
+set(CMAKE_CXX_FLAGS "-g -O3")
 
 # Gather source files
 file(GLOB_RECURSE SRC_FILES 
@@ -42,6 +42,7 @@ file(GLOB_RECURSE SRC_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/sources/*.cu"
     "${CMAKE_CURRENT_SOURCE_DIR}/includes/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/includes/*.cuh"
+    "${CMAKE_CURRENT_SOURCE_DIR}/includes/.hpp"
 )
 
 # Create the library

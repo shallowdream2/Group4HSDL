@@ -42,7 +42,7 @@ public:
   __device__ bool empty() const { return current_size == 0; }
   // __host__ void copy_to_cpu(size_t index, T *cpu_ptr);
   __host__ void sort_label(); //从host使用
-  __host__ bool resize(size_t new_size);
+  __host__ __device__ bool resize(size_t new_size);
   __host__ void prefetch() {
     for (int i = 0; i < blocks; i++) {
       pool->prefetch(block_idx_array[i]);
@@ -71,11 +71,7 @@ __host__ cuda_vector<T>::cuda_vector(mmpool<T> *pool, size_t capacity)
   cudaMallocManaged(&this->block_idx_array, sizeof(int) * capacity);
   this->block_idx_array[this->blocks] = block_idx;
   this->blocks += 1;
-  // printf("Constructor: blocks: %d\n", this->blocks);
-  // printf("block_idx:%d\n", block_idx);
-  //  cudaMemcpy(this->block_idx_array, &block_idx, sizeof(int),
-  //             cudaMemcpyHostToDevice);
-  //  this->blocks += 1;
+  
 };
 
 template <typename T>
@@ -148,7 +144,7 @@ template <typename T> __host__ cuda_vector<T>::~cuda_vector() {
   // free(this->first_elements);，数据在cuda label中释放
 };
 
-template <typename T> __host__ bool cuda_vector<T>::resize(size_t new_size) {
+template <typename T> __host__ __device__ bool cuda_vector<T>::resize(size_t new_size) {
   //在初始化后立即调用resize()，因此我们不需要检查是否有足够的块
   if (this->blocks == 0) {
     return false;

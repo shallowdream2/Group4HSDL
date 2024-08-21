@@ -1,76 +1,72 @@
 #include "definition/hub_def.h"
 #include "generation/gen_label.cuh"
+#include "vgroup/CT-Kmeans.h"
 #include <graph/graph_v_of_v.h>
 #include <memoryManagement/cuda_label.cuh>
+#include <unordered_set>
+#include <boost/random/mersenne_twister.hpp> // Include the appropriate header for mt19937
+#include <ctime> // Include the appropriate header for std::time
+#include "graph/graph_v_of_v_generate_random_graph.h"
+using namespace std;
 #define DATASET_PATH "/mnt/f/linux/rucgraph-HBPLL-GPU/data/euroroad2.txt"
-
+boost::random::mt19937 boost_random_time_seed{0};
 int main() {
 
-  // int deviceCount = 0;
-  // cudaError_t err = cudaGetDeviceCount(&deviceCount);
 
-  // if (err != cudaSuccess) {
-  //   printf("CUDA error: %s\n", cudaGetErrorString(err));
-  //   return -1;
-  // }
+  // parameters
+  long long V = 100;
+  long long E = 300;
+  double ec_min = 1;
+  double ec_max = 10;
 
-  // printf("Detected %d CUDA Capable device(s)\n", deviceCount);
+  graph_v_of_v<weight_type> instance_graph =
+      graph_v_of_v_generate_random_graph<weight_type>(V, E, ec_min, ec_max, 1,
+                                                      boost_random_time_seed);
+  instance_graph.txt_save("/mnt/f/linux/rucgraph-HBPLL-GPU/Group4HSDL/build/graph6.txt");
+  //instance_graph.txt_read(DATASET_PATH);
 
-  // for (int i = 0; i < deviceCount; i++) {
-  //   cudaDeviceProp deviceProp;
-  //   cudaGetDeviceProperties(&deviceProp, i);
-  //   printf("Device %d: %s\n", i, deviceProp.name);
-  //   // 在这里可以打印出更多的设备属性
-  // }
-  // cudaStream_t stream;
-  // cudaStreamCreate(&stream);
-  // int *test1;
-  // cudaMallocManaged(&test1, sizeof(int));
-  // *test1 = 1;
-  // int *test2;
-  // cudaMallocManaged(&test2, sizeof(int));
-  // size_t i = 0;
-  // for (; i < 1;) {
-  //   int start_idx = i;
-  //   int end_idx = i;
-  //   while (end_idx + 1 < 1 && 1 == 1) {
-  //     end_idx++;
-  //   }
-  //   size_t continuous_block_size = (end_idx - start_idx + 1) * 1;
-  //   if (end_idx == 1 - 1) {
-  //     continuous_block_size = (end_idx - start_idx) * 1 + 1 % 1;
-  //   }
-  //   int *block_start_ptr = test1;
-  //   cudaError_t err = cudaMemcpyAsync(test2, block_start_ptr,
-  //                                     continuous_block_size * sizeof(int),
-  //                                     cudaMemcpyDefault, stream);
-  //   i = end_idx + 1;
-  // }
 
-  // cudaStreamSynchronize(stream);
-
-  // printf("%d\n", *test2);
-
-  graph_v_of_v<weight_type> instance_graph;
-  instance_graph.txt_read(DATASET_PATH);
+  int hop_cst = 2;
   printf("Graph read from %s\n", DATASET_PATH);
   printf("Number of vertices: %d\n", instance_graph.size());
 
-  hop_constrained_case_info *info = NULL;
-  //cuda_label<hub_type> *Labels = NULL;
-  gen_labels_gpu(&instance_graph, info,  5);
+  std::unordered_map<int, std::vector<int>> groups;
+  generate_Group_CT_cores(instance_graph, hop_cst, groups);
+  // cuda_label<hub_type> *Labels = NULL;
 
-  // printf
-  //  //打印
-  // printf("dis , hop , hub , parent \n");
-  // for (int i = 0; i < vertex_num; i++) {
-  //   info->L_cuda[i].sort_label();
-  //   printf("vertex %d\n", i);
-  //   for (int j = 0; j < info->L_cuda[i].size(); j++) {
-  //     printf("{%d, %d, %d,%d},", (info->L_cuda[i]).get(j)->distance,
-  //            (info->L_cuda[i]).get(j)->hop,
-  //            (info->L_cuda[i]).get(j)->hub_vertex,
-  //            (info->L_cuda[i]).get(j)->parent_vertex);
+  //auto group = groups.begin()->second;
+
+  hop_constrained_case_info *info;
+  cudaMallocManaged(&info, sizeof(hop_constrained_case_info) * groups.size());
+
+  int num = 0;
+  for (auto it : groups) {
+    new (info + num) hop_constrained_case_info();
+    (info + num)->init_group(it.second, instance_graph,hop_cst);
+    (info + num)->init();
+    
+
+    gen_labels_gpu(&instance_graph, info + num, hop_cst);
+    num++;
+    printf("Group %d done\n\n", num);
+  }
+
+  // for (int i = 0; i < num; i++) {
+  //   printf("Group %d\n", i);
+  //   (info + i)->print_L();
+  // }
+  hop_constrained_case_info final;
+  final.final_label = new std::vector<std::unordered_set<hub_type>>(instance_graph.size());
+  for (int i = 0; i < num; ++i) {
+    final.merge_instance(*(info + i));
+  }
+  correctness_check(&final, &instance_graph,hop_cst);
+
+  // for (int i = 0; i < instance_graph.size(); i++) {
+  //   printf("Vertex %d: ", i);
+  //   unordered_set<hub_type>&temp = final.final_label->at(i);
+  //   for (const auto& it : temp) {
+  //     printf("{%d,%d,%d,%d}, ", it.hub_vertex,it.parent_vertex,it.hop,it.distance);
   //   }
   //   printf("\n");
   // }

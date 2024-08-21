@@ -8,7 +8,7 @@ using namespace std;
 vector<int> get_centers(vector<pair<int, int>> &graph, int &start,
                         vector<bool> &chosen, int nums) {
   vector<int> temp_v;
-  for (; temp_v.size() < nums && start < graph.size(); ++start) {
+  for (; temp_v.size() < (size_t)nums && (size_t)start < graph.size(); ++start) {
     if (!chosen[start]) {
       temp_v.push_back(start);
       chosen[start] = 1;
