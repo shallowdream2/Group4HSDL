@@ -5,8 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
-static void
-generate_Group_louvain(graph_v_of_v<int> &instance_graph, int hop_cst,
+static void generate_Group_louvain(graph_v_of_v<int> &instance_graph, int hop_cst,
                        std::unordered_map<int, std::vector<int>> &groups) {
   Louvain *lv = mycreate_louvain(instance_graph);
   learn_louvain(lv);

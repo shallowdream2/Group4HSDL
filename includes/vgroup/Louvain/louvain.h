@@ -2,7 +2,7 @@
 #ifndef _LOUVAIN_H
 #define _LOUVAIN_H
 #include "graph/graph_v_of_v.h"
-//#include "utilities/hash.h"
+#include "definition/hub_def.h"
 typedef struct _louvain Louvain;
 #define MAX_CIRCLE 20
 typedef struct _node {

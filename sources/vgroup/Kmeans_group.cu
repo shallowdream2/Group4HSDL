@@ -1,10 +1,10 @@
 
-#include "vgroup/Kmeans_group.h"
+#include "vgroup/Kmeans_group.cuh"
+#include <vector>
 #include <unordered_map>
-
 using namespace std;
 
-void print_groups(std::unordered_map<int, std::vector<int>> &groups) {
+void print_groups(std::vector< std::vector<int>> &groups) {
   for (auto it : groups) {
     printf("center: %d\n", it.first);
     for (auto it2 : it.second) {
@@ -93,15 +93,19 @@ void print_groups(std::unordered_map<int, std::vector<int>> &groups) {
 //   }
 // }
 
-void generate_Group_kmeans(graph_v_of_v<int> &instance_graph, int hop_cst,
-                           std::unordered_map<int, std::vector<int>> &groups) {
+void generate_Group_kmeans(graph_v_of_v<disType> &instance_graph, int hop_cst,
+                           std::vector< std::vector<int>> &groups) {
   int n = instance_graph.size();
   vector<int> labels(n, -1);
   vector<int> centers;
+  std::unordered_map<int, int> group_size;
+
   unordered_map<int, bool> chosen;
   srand(static_cast<unsigned int>(time(0)));
   //初始化dijkstra table
   dijkstra_table dt(instance_graph, false, 10000);
+
+
   int center = rand() % n;
   // 随机选择初始聚类中心
   for (int i = 0; i < group_num; ++i) {
@@ -117,22 +121,24 @@ void generate_Group_kmeans(graph_v_of_v<int> &instance_graph, int hop_cst,
     changed = false;
     dt.add_source(centers);
 
-
     // Assign nodes to the nearest cluster center
     for (int i = 0; i < n; ++i) {
       int nearest_center = -1;
-      double min_distance = numeric_limits<double>::max();
-      for (int center : centers) {
-        int distance = dt.query_distance(center, i);
-        //printf("source: %d,target: %d,dis: %d\n",center,i,distance );
-        if (distance < min_distance) {
-          nearest_center = center;
+      int min_distance = std::numeric_limits<int>::max();
+      for (auto j : centers) {
+        int distance = dt.query_distance(j, i);
+        // printf("distance %d %d %d\n", i, j, distance);
+        if (distance < min_distance && group_size[j] < MAX_GROUP_SIZE) {
+          nearest_center = j;
           min_distance = distance;
         }
       }
-      if (nearest_center != labels[i] && nearest_center!=-1) {
+      if (labels[i] != nearest_center) {
+        group_size[nearest_center]++;
+        if (labels[i] != -1) {
+          group_size[labels[i]]--;
+        }
         labels[i] = nearest_center;
-        changed = true;
       }
     }
 
@@ -140,14 +146,6 @@ void generate_Group_kmeans(graph_v_of_v<int> &instance_graph, int hop_cst,
     if (changed) {
       for (int i = 0; i < group_num; ++i) {
         vector<int> cluster;
-        // printf("center %d\n", centers[i]);
-        // for (int j = 0; j < n; ++j) {
-        //   if (labels[j] == centers[i]) {
-        //     cluster.push_back(j);
-        //     printf("%d ", j);
-        //   }
-        // }
-        // printf("\n");
         dt.add_source(cluster);
         // 计算簇的重心（中心）并选择新的聚类中心
         int new_center = find_new_center(cluster, instance_graph, dt);
@@ -155,6 +153,7 @@ void generate_Group_kmeans(graph_v_of_v<int> &instance_graph, int hop_cst,
       }
     }
   }
+  groups.resize(n);
 
   // 构建最终的groups
   for (int i = 0; i < n; ++i) {
@@ -162,7 +161,7 @@ void generate_Group_kmeans(graph_v_of_v<int> &instance_graph, int hop_cst,
   }
 }
 
-int find_new_center(vector<int> &cluster, graph_v_of_v<int> &graph,
+int find_new_center(vector<int> &cluster, graph_v_of_v<disType> &graph,
                     dijkstra_table &dt) {
   // 找到离簇重心最近的节点作为新的中心
   double min_sum_distance = numeric_limits<double>::max();

@@ -223,39 +223,45 @@ template <typename T> void graph_v_of_v<T>::txt_save(std::string save_name) {
 
   outputFile << "EOF" << std::endl;
 }
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <vector>
+template <typename T>
+void graph_v_of_v<T>::txt_read(std::string save_name) {
+    graph_v_of_v<T>::clear();
 
-template <typename T> void graph_v_of_v<T>::txt_read(std::string save_name) {
-
-  graph_v_of_v<T>::clear();
-
-  std::string line_content;
-  std::ifstream myfile(save_name); // open the file
-  if (myfile.is_open())            // if the file is opened successfully
-  {
-    while (getline(myfile, line_content)) // read file line by line
-    {
-      std::vector<std::string> Parsed_content = parse_string(line_content, " ");
-
-      if (!Parsed_content[0].compare(
-              "|V|=")) // when it's equal, compare returns 0
-      {
-        ADJs.resize(std::stoi(Parsed_content[1]));
-      } else if (!Parsed_content[0].compare("Edge")) {
-        int v1 = std::stoi(Parsed_content[1]);
-        int v2 = std::stoi(Parsed_content[2]);
-        T ec = std::stod(Parsed_content[3]);
-        graph_v_of_v<T>::add_edge(v1, v2, ec);
-      }
+    std::ifstream myfile(save_name);
+    if (!myfile.is_open()) {
+        std::cout << "Unable to open file " << save_name << std::endl
+                  << "Please check the file location or file name."
+                  << std::endl;
+        getchar();
+        exit(1);
     }
 
-    myfile.close(); // close the file
-  } else {
-    std::cout << "Unable to open file " << save_name << std::endl
-              << "Please check the file location or file name."
-              << std::endl; // throw an error message
-    getchar();              // keep the console window
-    exit(1);                // end the program
-  }
+    std::string line_content;
+    while (getline(myfile, line_content)) {
+        // 使用 istringstream 来解析行
+        std::istringstream iss(line_content);
+        std::string token;
+
+        // 读取首个 token 来决定处理方式
+        iss >> token;
+
+        if (token == "|V|=") {
+            int num_vertices;
+            iss >> num_vertices;
+            ADJs.resize(num_vertices);
+        } else if (token == "Edge") {
+            int v1, v2;
+            T ec;
+            iss >> v1 >> v2 >> ec;
+            graph_v_of_v<T>::add_edge(v1, v2, ec);
+        }
+    }
+
+    myfile.close();
 }
 
 template <typename T> void graph_v_of_v<T>::binary_save(std::string save_name) {

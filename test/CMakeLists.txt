@@ -14,10 +14,6 @@ set(CUDA_EXECUTABLES
     test_query_cuda
     test_generation
     test_cuda_queue
-)
-
-set(CPP_EXECUTABLES
-    test_readGraph
     test_dijkstra
     test_gen_groups
     test_ct_kmeans
@@ -25,10 +21,15 @@ set(CPP_EXECUTABLES
     test_kmeans
 )
 
+set(CPP_EXECUTABLES
+    test_readGraph
+)
+
 # 添加可执行文件
 foreach(exec ${CUDA_EXECUTABLES})
     add_executable(${exec} ${exec}.cu)
     target_link_libraries(${exec} PRIVATE CUDA::cudart Group4HSDL)
+    target_link_libraries(${exec} ${CUDA_RUNTIME_LIBRARY})
     set_target_properties(${exec} PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
 endforeach()
 

@@ -1,5 +1,6 @@
 
 #include "vgroup/Louvain/louvain.h"
+#include "definition/hub_def.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -80,6 +81,9 @@ Louvain *mycreate_louvain(graph_v_of_v<int> &G) {
 }
 
 static void add_node_to_comm(Louvain *lv, int id, int cid, double weight) {
+  if(lv->nodes[cid].count > MAX_GROUP_SIZE) {
+    return;
+  }
   lv->nodes[id].clsid = cid;
   lv->nodes[id].next = lv->nodes[cid].next;
   lv->nodes[cid].next = id;
@@ -170,7 +174,7 @@ static int first_stage(Louvain *lv) {
           }
           weight[ids[j]] = 0.0;
         }
-      if (maxDeltaQ > 0.0 && maxId != cid) {
+      if (maxDeltaQ > 0.0 && maxId != cid && lv->nodes[maxId].count <= MAX_GROUP_SIZE) {
         if (maxId == -1) {
           fprintf(stderr, "this can not be, something must be wrong\n");
           return 0;

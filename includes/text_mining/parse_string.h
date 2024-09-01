@@ -22,22 +22,4 @@ inline std::vector<std::string> parse_string(std::string parse_target, std::stri
 }
 
 
-/*
------------
-#include <text_mining/parse_string.h>
-
-int main()
-{
-	example_parse_string();
-}
-----------------
-*/
-
-#include<iostream>
-inline void example_parse_string() {
-
-	std::string s = "sfgdssddd";
-	auto xx = parse_string(s, "gd");
-	std::cout << xx[0] << "|" << xx[1] << std::endl;
-}
 #endif

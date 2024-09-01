@@ -1,4 +1,4 @@
-#include "vgroup/Louvain_group.h"
+#include "vgroup/Louvain_group.cuh"
 
 int main() {
   graph_v_of_v<int> g;

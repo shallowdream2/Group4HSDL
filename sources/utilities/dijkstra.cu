@@ -1,19 +1,31 @@
-#include "utilities/dijkstra.h"
+#include "utilities/dijkstra.cuh"
 #include "definition/hub_def.h"
+#include "utilities/GPU_csr.hpp"
 #include <unordered_map>
 #include <unordered_set>
 
-dijkstra_table::dijkstra_table(graph_v_of_v<int> &g, bool is_directed, int k,
-                               vector<int> sources)
-    : graph(g), is_directed(is_directed), k(k),
+dijkstra_table::dijkstra_table(graph_v_of_v<disType> &g, bool is_directed,
+                               int k, vector<int> sources)
+    : graph(g), is_directed(is_directed), k(k),input_graph(graph_v_of_v_to_CSR<disType>(g)),
       source_set(unordered_set<int>(sources.begin(), sources.end())) {
+  
   for (int source : sources) {
     runDijkstra(source);
   }
 }
 
+void dijkstra_table::runDijkstra_gpu(vector<int> &sources) {
+  for (int source : sources) {
+    if (source_set.find(source) == source_set.end()) {
+      source_set.insert(source);
+      query_table_gpu[source].resize(graph.size());
+      gpu_shortest_paths(input_graph, source, query_table_gpu[source]);
+    }
+  }
+}
+
 void dijkstra_table::runDijkstra(int s) {
-  if (query_table.find(s) != query_table.end()) {
+  if (query_table_cpu.find(s) != query_table_cpu.end()) {
     return;
   }
   priority_queue<pair<disType, pair<int, int>>, // <dis, <当前节点, hop>>
@@ -49,31 +61,31 @@ void dijkstra_table::runDijkstra(int s) {
       if (new_dist < distance[v].first) {
         distance[v].first = new_dist;
         distance[v].second = u;
-        pq.push({new_dist,{v,hop+1}});
+        pq.push({new_dist, {v, hop + 1}});
       }
     }
   }
 
   // 保存计算结果到查询表
-  query_table[s] = distance;
+  query_table_cpu[s] = distance;
 }
 
 vector<int> dijkstra_table::query_path(int s, int t) {
   vector<int> path;
-  if (query_table.find(s) != query_table.end()) {
+  if (query_table_cpu.find(s) != query_table_cpu.end()) {
     int cur = t;
     while (cur != s) {
       path.push_back(cur);
-      cur = query_table[s][cur].second;
+      cur = query_table_cpu[s][cur].second;
     }
     path.push_back(s);
     reverse(path.begin(), path.end());
 
-  } else if (query_table.find(t) != query_table.end()) {
+  } else if (query_table_cpu.find(t) != query_table_cpu.end()) {
     int cur = s;
     while (cur != t) {
       path.push_back(cur);
-      cur = query_table[t][cur].second;
+      cur = query_table_cpu[t][cur].second;
     }
     path.push_back(t);
   }
@@ -81,15 +93,24 @@ vector<int> dijkstra_table::query_path(int s, int t) {
 }
 
 disType dijkstra_table::query_distance(int s, int t) {
+  if (is_gpu) {
+    if (source_set.find(s) != source_set.end()) {
+      return query_table_gpu[s][t];
+    }
+    if (source_set.find(t) != source_set.end()) {
+      return query_table_gpu[t][s];
+    }
+    return numeric_limits<disType>::max();
+  }
   disType min_distance = numeric_limits<disType>::max();
 
-  if (query_table.find(s) != query_table.end()) {
-    if (query_table[s].find(t) != query_table[s].end()) {
-      min_distance = query_table[s][t].first;
+  if (query_table_cpu.find(s) != query_table_cpu.end()) {
+    if (query_table_cpu[s].find(t) != query_table_cpu[s].end()) {
+      min_distance = query_table_cpu[s][t].first;
     }
-  } else if (query_table.find(t) != query_table.end()) {
-    if (query_table[t].find(s) != query_table[t].end()) {
-      min_distance = query_table[t][s].first;
+  } else if (query_table_cpu.find(t) != query_table_cpu.end()) {
+    if (query_table_cpu[t].find(s) != query_table_cpu[t].end()) {
+      min_distance = query_table_cpu[t][s].first;
     }
   }
 

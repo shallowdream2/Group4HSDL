@@ -4,7 +4,7 @@
 #include "generation/gen_label.cuh"
 #include "graph/graph_v_of_v.h"
 #include "memoryManagement/cuda_hashTable.cuh"
-#include "utilities/dijkstra.h"
+#include "utilities/dijkstra.cuh"
 #include <cassert>
 #include <cuda_runtime.h>
 

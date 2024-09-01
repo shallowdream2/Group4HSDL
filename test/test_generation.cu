@@ -1,6 +1,6 @@
 #include "definition/hub_def.h"
 #include "generation/gen_label.cuh"
-#include "vgroup/CT-Kmeans.h"
+#include "vgroup/CT-Kmeans.cuh"
 #include <graph/graph_v_of_v.h>
 #include <memoryManagement/cuda_label.cuh>
 #include <unordered_set>
@@ -30,7 +30,7 @@ int main() {
   printf("Graph read from %s\n", DATASET_PATH);
   printf("Number of vertices: %d\n", instance_graph.size());
 
-  std::unordered_map<int, std::vector<int>> groups;
+  std::vector<std::vector<int>> groups;
   generate_Group_CT_cores(instance_graph, hop_cst, groups);
   // cuda_label<hub_type> *Labels = NULL;
 
@@ -42,7 +42,7 @@ int main() {
   int num = 0;
   for (auto it : groups) {
     new (info + num) hop_constrained_case_info();
-    (info + num)->init_group(it.second, instance_graph,hop_cst);
+    (info + num)->init_group(it, instance_graph,hop_cst);
     (info + num)->init();
     
 

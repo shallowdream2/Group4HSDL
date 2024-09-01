@@ -26,6 +26,7 @@ list(APPEND CUDA_NVCC_FLAGS
     "-G"
     "--expt-relaxed-constexpr"
     "--extended-lambda"
+    "-O3"
 )
 string(JOIN " " CMAKE_CUDA_FLAGS ${CUDA_NVCC_FLAGS})
 
@@ -42,7 +43,7 @@ file(GLOB_RECURSE SRC_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/sources/*.cu"
     "${CMAKE_CURRENT_SOURCE_DIR}/includes/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/includes/*.cuh"
-    "${CMAKE_CURRENT_SOURCE_DIR}/includes/.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/includes/*.hpp"
 )
 
 # Create the library
