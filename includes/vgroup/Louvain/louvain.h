@@ -40,6 +40,6 @@ Louvain * create_louvain(const char * input);
 int learn_louvain(Louvain * lv);
 void save_louvain(Louvain * lv);
 void free_louvain(Louvain *lv);
-Louvain *mycreate_louvain(graph_v_of_v<int> &G);
+Louvain *mycreate_louvain(graph_v_of_v<disType> &G);
 
 #endif //LOUVAIN_H

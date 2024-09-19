@@ -17,7 +17,7 @@ using namespace std;
 
 class dijkstra_table {
 public:
-  graph_v_of_v<disType> graph;
+  graph_v_of_v<disType> &graph;
   CSR_graph<disType> input_graph;
   bool is_gpu = false;
 
@@ -26,6 +26,7 @@ public:
   unordered_set<int> source_set;
   unordered_map<int, unordered_map<int, entry>> query_table_cpu;
   unordered_map<int, vector<disType>> query_table_gpu;
+  disType* d_distances; //gpu
   dijkstra_table(graph_v_of_v<disType> &g, bool is_directed = false, int k = 5,
                  vector<int> sources = {0});
 
@@ -40,4 +41,5 @@ public:
       runDijkstra(it);
     }
   }
+  disType* get_distances_gpu();
 };

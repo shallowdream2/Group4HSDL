@@ -8,7 +8,7 @@
 #include "memoryManagement/cuda_queue.cuh"
 #include "memoryManagement/cuda_vector.cuh"
 #include "definition/hub_def.h"
-#include "memoryManagement/cuda_hashTable.cuh"
+#include "memoryManagement/cuda_hashtable.cuh"
 #include "generation/cuda_sort.cuh"
 #include "generation/cuda_clean_label.cuh"
 

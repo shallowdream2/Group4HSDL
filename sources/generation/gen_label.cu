@@ -3,7 +3,7 @@
 #include "generation/cuda_clean_label.cuh"
 #include "generation/gen_label.cuh"
 #include "graph/graph_v_of_v.h"
-#include "memoryManagement/cuda_hashTable.cuh"
+#include "memoryManagement/cuda_hashtable.cuh"
 #include "utilities/dijkstra.cuh"
 #include <cassert>
 #include <cuda_runtime.h>

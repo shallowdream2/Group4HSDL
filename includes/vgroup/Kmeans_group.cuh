@@ -11,11 +11,11 @@
 #include <algorithm>
 
 
-#define group_num 20
+
 
 // algo
 void generate_Group_kmeans(graph_v_of_v<disType> &instance_graph, int hop_cst,
-                           std::vector<int, std::vector<int>> &groups);
+                           std::vector<std::vector<int>> &groups);
 
 int find_new_center(vector<int> &cluster, graph_v_of_v<disType> &graph,
                     dijkstra_table &dt);

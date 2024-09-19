@@ -41,12 +41,13 @@ void link_edge(_louvain *lv, int l, int r, int &ei, int weight) {
   lv->edges[ei].weight = weight;
   lv->edges[ei].next = lv->nodes[l].eindex;
   lv->nodes[l].eindex = ei;
+  lv->nodes[r].kin+=weight;
   ei += 1;
 }
 
-Louvain *mycreate_louvain(graph_v_of_v<int> &G) {
+Louvain *mycreate_louvain(graph_v_of_v<disType> &G) {
 
-  std::vector<std::vector<std::pair<int, int>>> &graph = G.ADJs;
+  std::vector<std::vector<std::pair<int, disType>>> &graph = G.ADJs;
   Louvain *lv = new Louvain;
   // Hash *hs = hash_create(1 << 23, INT); // 创建哈希表来存储节点
   int ei = 0;
@@ -61,9 +62,10 @@ Louvain *mycreate_louvain(graph_v_of_v<int> &G) {
 
   // 重新遍历图，将边信息加入 Louvain 结构体
   for (size_t u = 0; u < graph.size(); u++) {
+    
     for (auto &v_weight_pair : graph[u]) {
       int v = v_weight_pair.first;
-      weight = static_cast<double>(v_weight_pair.second);
+      weight = v_weight_pair.second;
 
       lv->sumw += weight;
 
@@ -81,9 +83,6 @@ Louvain *mycreate_louvain(graph_v_of_v<int> &G) {
 }
 
 static void add_node_to_comm(Louvain *lv, int id, int cid, double weight) {
-  if(lv->nodes[cid].count > MAX_GROUP_SIZE) {
-    return;
-  }
   lv->nodes[id].clsid = cid;
   lv->nodes[id].next = lv->nodes[cid].next;
   lv->nodes[cid].next = id;
@@ -161,8 +160,7 @@ static int first_stage(Louvain *lv) {
       for (j = 0; j < idc; j++)
         if (weight[ids[j]] > 0.0) {
           if (cid == ids[j]) {
-            deltaQ = weight[ids[j]] -
-                     kv * (lv->nodes[ids[j]].clstot - kv) / lv->sumw;
+            deltaQ = weight[ids[j]] - kv * (lv->nodes[ids[j]].clstot - kv) / lv->sumw;
             cwei = weight[ids[j]];
           } else {
             deltaQ = weight[ids[j]] - kv * lv->nodes[ids[j]].clstot / lv->sumw;
@@ -185,7 +183,7 @@ static int first_stage(Louvain *lv) {
         stage_two = 1;
       }
     }
-    fprintf(stderr, "    one iteration inner first stage, changed nodes : %d\n",
+    fprintf(stderr, "one iteration inner first stage, changed nodes : %d\n",
             cct);
     if (cct == 0) {
       break;

@@ -9,20 +9,24 @@ include_directories(${CMAKE_SOURCE_DIR}/includes)
 
 # 定义可执行文件和源文件列表
 set(CUDA_EXECUTABLES
-    test_cuda_vector
-    test_globla_labels
-    test_query_cuda
-    test_generation
-    test_cuda_queue
-    test_dijkstra
-    test_gen_groups
+    # test_cuda_vector
+    # test_globla_labels
+    # test_query_cuda
+    # test_generation
+    # test_cuda_queue
+    # test_dijkstra
+    # test_gen_groups
     test_ct_kmeans
-    test_louvain
+    
     test_kmeans
+    test_cdlp
+    
 )
 
 set(CPP_EXECUTABLES
-    test_readGraph
+    #test_readGraph
+    test_random
+    test_louvain
 )
 
 # 添加可执行文件

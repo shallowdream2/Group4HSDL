@@ -40,7 +40,13 @@ run.sh)
 #include <text_mining/parse_string.h>
 #include <tool_functions/sorted_vector_binary_operations.h>
 #include <vector>
-#include <vector>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <tuple>
+#include <thread>
+#include <mutex>
+#include <future>
 
 template <typename T> class ARRAY_graph;
 
@@ -53,7 +59,6 @@ public:
   this class is for undirected and edge-weighted graph
   */
   std::vector<std::vector<std::pair<int, T>>> ADJs;
-
   /*constructors*/
   graph_v_of_v() {}
   graph_v_of_v(int n) {
@@ -64,6 +69,7 @@ public:
 
   /*class member functions*/
   inline void add_edge(int, int, T); // this function can change edge weights
+  inline void add_edge_new(int e1, int e2, T ec);
   inline void remove_edge(int, int);
   inline void remove_all_adjacent_edges(int);
   inline bool contain_edge(int, int); // whether there is an edge
@@ -77,6 +83,7 @@ public:
                                        // ec; if there is no such e2, return -1
   inline void txt_save(std::string);
   inline void txt_read(std::string);
+  inline void txt_read_new(std::string);
   inline void binary_save(std::string);
   inline void binary_read(std::string);
   inline ARRAY_graph<T> toARRAY();
@@ -84,8 +91,24 @@ public:
 };
 
 /*class member functions*/
-
 template <typename T> void graph_v_of_v<T>::add_edge(int e1, int e2, T ec) {
+
+  /*we assume that the size of g is larger than e1 or e2;
+   this function can update edge weight; there will be no redundent edge*/
+
+  /*
+  Add the edges (e1,e2) and (e2,e1) with the weight ec
+  When the edge exists, it will update its weight.
+  Time complexity:
+          O(log n) When edge already exists in graph
+          O(n) When edge doesn't exist in graph
+  */
+
+  sorted_vector_binary_operations_insert(ADJs[e1], e2, ec);
+  sorted_vector_binary_operations_insert(ADJs[e2], e1, ec);
+}
+
+template <typename T> void graph_v_of_v<T>::add_edge_new(int e1, int e2, T ec) {
 
   /*we assume that the size of g is larger than e1 or e2;
    this function can update edge weight; there will be no redundent edge*/
@@ -227,42 +250,50 @@ template <typename T> void graph_v_of_v<T>::txt_save(std::string save_name) {
 #include <sstream>
 #include <iostream>
 #include <vector>
+#include <tuple>
+
 template <typename T>
 void graph_v_of_v<T>::txt_read(std::string save_name) {
-    graph_v_of_v<T>::clear();
+    //graph_v_of_v<T>::clear();
 
     std::ifstream myfile(save_name);
     if (!myfile.is_open()) {
-        std::cout << "Unable to open file " << save_name << std::endl
+        std::cerr << "Unable to open file " << save_name << std::endl
                   << "Please check the file location or file name."
                   << std::endl;
-        getchar();
         exit(1);
     }
 
     std::string line_content;
+    std::vector<std::tuple<int, int, T>> edges; // 存储边信息
+    int num_vertices = 0;
+
     while (getline(myfile, line_content)) {
-        // 使用 istringstream 来解析行
-        std::istringstream iss(line_content);
-        std::string token;
-
-        // 读取首个 token 来决定处理方式
-        iss >> token;
-
-        if (token == "|V|=") {
-            int num_vertices;
-            iss >> num_vertices;
+        // 避免使用 istringstream
+        if (line_content.compare(0, 5, "|V|= ") == 0) {
+            num_vertices = std::stoi(line_content.substr(5));
             ADJs.resize(num_vertices);
-        } else if (token == "Edge") {
+            //adj_list_mutexes.resize(num_vertices);
+        } else if (line_content.compare(0, 4, "Edge") == 0) {
+            // 使用 sscanf 来快速解析
             int v1, v2;
             T ec;
-            iss >> v1 >> v2 >> ec;
-            graph_v_of_v<T>::add_edge(v1, v2, ec);
+            sscanf(line_content.c_str(), "Edge %d %d %d", &v1, &v2, &ec);
+            edges.emplace_back(v1, v2, ec); // 暂存边信息，避免多次调用 add_edge
         }
+    }
+
+    // 统一添加边
+    for (const auto& [v1, v2, ec] : edges) {
+        graph_v_of_v<T>::add_edge(v1, v2, ec);
     }
 
     myfile.close();
 }
+
+
+
+
 
 template <typename T> void graph_v_of_v<T>::binary_save(std::string save_name) {
 

@@ -2,7 +2,7 @@
 #define CUDA_LABEL_CUH
 #include "definition/hub_def.h"
 #include "label/hop_constrained_two_hop_labels.cuh"
-#include "memoryManagement/cuda_hashTable.cuh"
+#include "memoryManagement/cuda_hashtable.cuh"
 //#include <thrust/device_vector.h>
 
 template <typename T> class cuda_label {

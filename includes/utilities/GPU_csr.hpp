@@ -26,6 +26,7 @@ public:
   std::vector<weight_type> INs_Edge_weights,
       OUTs_Edge_weights; // Edge_weights[Neighbor_start_pointers[i]] is the
                          // start of Neighbor_sizes[i] edge weights
+
   int *in_pointer, *out_pointer, *in_edge, *out_edge, *all_pointer,
       *all_edge; // All_edge has merged in_edge and out_edge, mainly used on
                  // CDLP
@@ -119,6 +120,7 @@ CSR_graph<weight_type> toCSR(graph_structure<weight_type> &graph) {
 
   return ARRAY;
 }
+
 template <typename weight_type>
 CSR_graph<weight_type> graph_v_of_v_to_CSR(graph_v_of_v<weight_type> &g) {
   CSR_graph<weight_type> ARRAY;
@@ -139,24 +141,32 @@ CSR_graph<weight_type> graph_v_of_v_to_CSR(graph_v_of_v<weight_type> &g) {
   }
   ARRAY.INs_Neighbor_start_pointers[V] = pointer;
 
-  pointer = 0;
-  for (int i = 0; i < V; i++) {
-    ARRAY.OUTs_Neighbor_start_pointers[i] = pointer;
-    for (auto &xx : g.ADJs[i]) {
-      ARRAY.OUTs_Edges.push_back(xx.first);
-      ARRAY.OUTs_Edge_weights.push_back(xx.second);
-    }
-    pointer += g.ADJs[i].size();
-  }
-  ARRAY.OUTs_Neighbor_start_pointers[V] = pointer;
+  ARRAY.OUTs_Edges =  ARRAY.INs_Edges;
+  ARRAY.OUTs_Edge_weights = ARRAY.INs_Edge_weights;
+  ARRAY.OUTs_Neighbor_start_pointers = ARRAY.INs_Neighbor_start_pointers;
+
+
+  // pointer = 0;
+  // for (int i = 0; i < V; i++) {
+  //   ARRAY.OUTs_Neighbor_start_pointers[i] = pointer;
+  //   for (auto &xx : g.ADJs[i]) {
+  //     ARRAY.OUTs_Edges.push_back(xx.first);
+  //     ARRAY.OUTs_Edge_weights.push_back(xx.second);
+  //   }
+  //   pointer += g.ADJs[i].size();
+  // }
+  // ARRAY.OUTs_Neighbor_start_pointers[V] = pointer;
 
   pointer = 0;
   for (int i = 0; i < V; i++) {
     ARRAY.ALL_start_pointers[i] = pointer;
-    for (auto &xx : g.ADJs[i]) {
-      ARRAY.all_Edges.push_back(xx.first);
-    }
-    pointer += g.ADJs[i].size();
+    int IN_start = ARRAY.INs_Neighbor_start_pointers[i];
+    int IN_end = ARRAY.INs_Neighbor_start_pointers[i+1];
+    
+    ARRAY.all_Edges.insert(ARRAY.all_Edges.end(),ARRAY.INs_Edges.begin()+IN_start,ARRAY.INs_Edges.begin()+IN_end);
+    ARRAY.all_Edges.insert(ARRAY.all_Edges.end(),ARRAY.INs_Edges.begin()+IN_start,ARRAY.INs_Edges.begin()+IN_end);
+    pointer += (IN_end-IN_start)*2;
+
   }
   ARRAY.ALL_start_pointers[V] = pointer;
 
@@ -165,14 +175,14 @@ CSR_graph<weight_type> graph_v_of_v_to_CSR(graph_v_of_v<weight_type> &g) {
   size_t E_all = E_in + E_out;
   ARRAY.E_all = E_all;
 
-  cudaMallocManaged((void **)&ARRAY.in_pointer, (V + 1) * sizeof(int));
-  cudaMallocManaged((void **)&ARRAY.out_pointer, (V + 1) * sizeof(int));
-  cudaMallocManaged((void **)&ARRAY.all_pointer, (V + 1) * sizeof(int));
-  cudaMallocManaged((void **)&ARRAY.in_edge, E_in * sizeof(int));
-  cudaMallocManaged((void **)&ARRAY.out_edge, E_out * sizeof(int));
-  cudaMallocManaged((void **)&ARRAY.all_edge, E_all * sizeof(int));
-  cudaMallocManaged((void **)&ARRAY.in_edge_weight, E_in * sizeof(double));
-  cudaMallocManaged((void **)&ARRAY.out_edge_weight, E_out * sizeof(double));
+  cudaMalloc((void **)&ARRAY.in_pointer, (V + 1) * sizeof(int));
+  cudaMalloc((void **)&ARRAY.out_pointer, (V + 1) * sizeof(int));
+  cudaMalloc((void **)&ARRAY.all_pointer, (V + 1) * sizeof(int));
+  cudaMalloc((void **)&ARRAY.in_edge, E_in * sizeof(int));
+  cudaMalloc((void **)&ARRAY.out_edge, E_out * sizeof(int));
+  cudaMalloc((void **)&ARRAY.all_edge, E_all * sizeof(int));
+  cudaMalloc((void **)&ARRAY.in_edge_weight, E_in * sizeof(double));
+  cudaMalloc((void **)&ARRAY.out_edge_weight, E_out * sizeof(double));
 
   cudaDeviceSynchronize();
   cudaError_t error = cudaGetLastError();

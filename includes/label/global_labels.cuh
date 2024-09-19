@@ -3,7 +3,7 @@
 
 #include "definition/hub_def.h"
 #include "label/hop_constrained_two_hop_labels.cuh"
-#include "memoryManagement/cuda_hashTable.cuh"
+#include "memoryManagement/cuda_hashtable.cuh"
 #include "memoryManagement/cuda_vector.cuh"
 #include "memoryManagement/mmpool.cuh"
 #include "unordered_map"

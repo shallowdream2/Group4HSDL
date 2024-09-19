@@ -10,15 +10,16 @@
 #include <cub/cub.cuh>
 #include <vector>
 #include <string.h>
-
+#include <definition/hub_def.h>
 
 
 using namespace std;
 #define CD_THREAD_PER_BLOCK 512
 
+
 __global__ void Label_init(int *labels, int *all_pointer, int N);
 __global__ void LabelPropagation(int *all_pointer, int *prop_labels, int *labels, int *all_edge, int N);
-__global__ void Get_New_Label(int *all_pointer, int *prop_labels, int *new_labels,  int N);
+__global__ void Get_New_Label(int *all_pointer, int *prop_labels, int *new_labels,int* community_size,  int N);
 void checkCudaError(cudaError_t err, const char* msg);
 void checkDeviceProperties();
 
@@ -56,7 +57,7 @@ __global__ void Label_init(int *labels, int *all_pointer, int N)
 // every segmentation are sorted
 // count Frequency from the start in the global_space_for_label to the end in the global_space_for_label
 // the new labels are stroed in the new_labels
-__global__ void Get_New_Label(int *all_pointer, int *prop_labels, int *new_labels,  int N)
+__global__ void Get_New_Label(int *all_pointer, int *prop_labels, int *new_labels,int* community_size,  int N)
 {
     // Use GPU to propagate all labels at the same time.
     int tid = blockDim.x * blockIdx.x + threadIdx.x; // tid decides process which vertex
@@ -67,8 +68,9 @@ __global__ void Get_New_Label(int *all_pointer, int *prop_labels, int *new_label
             if (prop_labels[c] == last_label)
             {
                 last_count++; // add up the number of label occurrences
-                if (last_count > maxcount) // the number of label occurrences currently traversed is greater than the recorded value
+                if (last_count > maxcount && atomicAdd(&community_size[last_label], 1) < MAX_GROUP_SIZE) // the number of label occurrences currently traversed is greater than the recorded value
                 {
+                    atomicAdd(&community_size[maxlabel], -1);
                     maxcount = last_count; // update maxcount and maxlabel
                     maxlabel = last_label;
                 }
@@ -79,13 +81,17 @@ __global__ void Get_New_Label(int *all_pointer, int *prop_labels, int *new_label
                 last_count = 1;
             }
         }
-        new_labels[tid] = maxlabel; // record the maxlabel
+        // 检查选择的标签对应的社区大小是否已达最大值
+        //atomicAdd(&community_size[maxlabel], 1); // 如果没有超过限制，则增加该标签对应社区的大小
+        new_labels[tid] = maxlabel; // 记录maxlabel
+        
     }
 }
 
+
 // Community Detection Using Label Propagation on GPU
 // Returns label of the graph based on the graph and number of iterations.
-void CDLP_GPU(int N, CSR_graph<double>& input_graph, std::vector<int>& res, int max_iterations)
+void CDLP_GPU(int N, CSR_graph<double>& input_graph, std::vector<int>& res, int max_iterations=100000)
 {
     //int N = graph.size(); // number of vertices in the graph
     dim3 init_label_block((N + CD_THREAD_PER_BLOCK - 1) / CD_THREAD_PER_BLOCK, 1, 1); // the number of blocks used in the gpu
@@ -101,6 +107,11 @@ void CDLP_GPU(int N, CSR_graph<double>& input_graph, std::vector<int>& res, int 
 
     int CD_ITERATION = max_iterations; // fixed number of iterations
     long long E = input_graph.E_all; // number of edges in the graph
+
+    int *community_size;
+    cudaMallocManaged((void**)&community_size, N * sizeof(int));
+    cudaMemset(community_size, 0, N * sizeof(int));
+
     cudaMallocManaged((void**)&new_labels, N * sizeof(int));
     cudaMallocManaged((void**)&labels, N * sizeof(int));
     cudaMallocManaged((void**)&prop_labels, E * sizeof(int));
@@ -169,8 +180,9 @@ void CDLP_GPU(int N, CSR_graph<double>& input_graph, std::vector<int>& res, int 
             fprintf(stderr, "Sort failed: %s\n", cudaGetErrorString(cuda_status));
             return;
         }
-        
-        Get_New_Label<<<init_label_block, init_label_thread>>>(all_pointer, new_prop_labels, new_labels,  N); // generate a new vertex label by label propagation information
+
+        cudaMemset(community_size, 0, N * sizeof(int));  // 每次迭代重置社区大小
+        Get_New_Label<<<init_label_block, init_label_thread>>>(all_pointer, new_prop_labels, new_labels, community_size, N); // generate a new vertex label by label propagation information
 
         cudaDeviceSynchronize();
 
@@ -196,6 +208,8 @@ void CDLP_GPU(int N, CSR_graph<double>& input_graph, std::vector<int>& res, int 
     }
 
     cudaFree(labels);
+    cudaFree(community_size);
+
 }
 
 // check whether cuda errors occur and output error information

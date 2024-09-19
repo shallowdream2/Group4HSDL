@@ -9,7 +9,7 @@
 
 static void
 generate_Group_Random(graph_v_of_v<disType> &instance_graph, int hop_cst,
-                    std::unordered_map<int, std::vector<int>> &groups) {
+                    std::vector<std::vector<int>> &groups) {
   //根据 MAX_GROUP_SIZE 限制每个group的大小，随机的将点分配到group中
   int N = instance_graph.size();
   
@@ -23,6 +23,7 @@ generate_Group_Random(graph_v_of_v<disType> &instance_graph, int hop_cst,
   std::random_device rd;
   std::mt19937 g(rd());
   std::shuffle(nodes.begin(), nodes.end(), g);
+  groups.resize(N);
   
   // 将节点分配到组中
   int group_id = 0;

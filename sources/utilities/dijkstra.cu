@@ -15,13 +15,29 @@ dijkstra_table::dijkstra_table(graph_v_of_v<disType> &g, bool is_directed,
 }
 
 void dijkstra_table::runDijkstra_gpu(vector<int> &sources) {
-  for (int source : sources) {
-    if (source_set.find(source) == source_set.end()) {
-      source_set.insert(source);
-      query_table_gpu[source].resize(graph.size());
-      gpu_shortest_paths(input_graph, source, query_table_gpu[source]);
+  std::vector<cudaStream_t> streams(sources.size());
+  int N = graph.size();
+  //创建d_distances，形状为sources.size() * N
+  //cudaMallocManaged(&d_distances,sizeof(disType)*sources.size() * N);
+  // 创建CUDA流
+    for (size_t i = 0; i < sources.size(); ++i) {
+        cudaStreamCreate(&streams[i]);
     }
-  }
+   // 并行化处理多个源节点
+    for (size_t i = 0; i < sources.size(); ++i) {
+        int source = sources[i];
+        if (source_set.find(source) == source_set.end()) {
+            source_set.insert(source);
+            query_table_gpu[source].resize(graph.size());
+            gpu_shortest_paths(input_graph, source, query_table_gpu[source] ,streams[i]);
+        }
+    }
+
+    // 同步所有流
+    for (size_t i = 0; i < sources.size(); ++i) {
+        cudaStreamSynchronize(streams[i]);
+        cudaStreamDestroy(streams[i]);
+    }
 }
 
 void dijkstra_table::runDijkstra(int s) {
@@ -94,13 +110,14 @@ vector<int> dijkstra_table::query_path(int s, int t) {
 
 disType dijkstra_table::query_distance(int s, int t) {
   if (is_gpu) {
-    if (source_set.find(s) != source_set.end()) {
-      return query_table_gpu[s][t];
-    }
-    if (source_set.find(t) != source_set.end()) {
-      return query_table_gpu[t][s];
-    }
-    return numeric_limits<disType>::max();
+    // if (source_set.find(s) != source_set.end()) {
+    //   return query_table_gpu[s][t];
+    // }
+    // if (source_set.find(t) != source_set.end()) {
+    //   return query_table_gpu[t][s];
+    // }
+    // return numeric_limits<disType>::max();
+    return query_table_gpu[s][t];
   }
   disType min_distance = numeric_limits<disType>::max();
 
@@ -115,4 +132,8 @@ disType dijkstra_table::query_distance(int s, int t) {
   }
 
   return min_distance;
+}
+
+disType* dijkstra_table::get_distances_gpu(){
+  return d_distances;
 }
